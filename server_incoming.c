@@ -16,14 +16,32 @@
 #include "server_base.c"
 
 pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+Mail* mails[MAX_CLIENTS][MAX_MAILS_PER_CLIENT]; //TODO: zrobić listę jednokierunkową
+
+void add_to_mailbox(Mail mail){
+  
+}
+
 
 void* function(void *arg)
 {
-
+  int new_socket = *((int *)arg);
+  int n;
+  Mail mail;
+  for(;;){
+    n=recv(new_socket, &mail, 2000, 0);
+    printf("Got message: \"%s\"\n", mail.topic);
+    if(n<1){
+        break;
+    }
+  add_to_mailbox(mail);
+  }
+  return 0;
 }
 
 
 int main(){
+  printf("in main: %s:%d\n", SERVER_IN_ADDR, SERVER_IN_PORT);
   base(SERVER_IN_ADDR, SERVER_IN_PORT, function);
   return 0;
 }
