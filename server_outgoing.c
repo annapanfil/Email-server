@@ -16,6 +16,7 @@
 #include "mail.h"
 #include "config.h"
 #include "server_base.c"
+#include "user.c"
 
 pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
 
@@ -48,6 +49,12 @@ void* mail_service(void *arg)
 
 
 int main(){
+  User users[100];
+  int users_num = 0;
+
+  new_user("Anna", "qwerty", users);
+  printf("created %s\n", users[0].username);
+
   base(SERVER_OUT_ADDR, SERVER_OUT_PORT, mail_service);
   return 0;
 }
