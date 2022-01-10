@@ -47,13 +47,11 @@ void* mail_service(void *arg)
     pthread_exit(NULL);
 }
 
-
 int main(){
   User users[100];
   int users_num = 0;
-
-  new_user("Anna", "qwerty", users);
-  printf("created %s\n", users[0].username);
+  User active_users[100];
+  int active_users_num = 0;
 
   base(SERVER_OUT_ADDR, SERVER_OUT_PORT, mail_service);
   return 0;

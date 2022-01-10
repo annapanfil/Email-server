@@ -9,7 +9,6 @@
 #include <pthread.h>
 #include <errno.h>
 
-
 void create_socket(const char* ip, const int port, struct sockaddr_in* server_addr, int* server_socket){
   // int server_socket = create_socket(ip_addr, port);
   //Configure server address
