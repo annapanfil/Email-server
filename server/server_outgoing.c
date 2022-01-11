@@ -18,20 +18,27 @@
 // ---------------------------------------------------------------------------
 
 void* get_interaction(void* arg){
-
   int new_socket = *((int*)arg);
   User user;
   Feedback feedback;
-  recv(new_socket, &user, sizeof(user), 0);
-  switch (user.id){
-    case 1: feedback = new_user(user.username, user.password); break;
-    case 2: feedback = login_user(user.username, user.password); break;
-    case 3: feedback = logout_user(user.username); break;
+  int n = recv(new_socket, &user, sizeof(user), 0);
+  while (n>0){
+    switch (user.id){
+      case 1: feedback = new_user(user.username, user.password); break;
+      case 2: feedback = login_user(user.username, user.password); break;
+      case 3: feedback = logout_user(user.username); break;
+    }
+    if(send(new_socket, &feedback, sizeof(feedback), 0) < 0)
+      printf("Send feedback failed\n");
+    else
+      printf("\e[0;35mFeedback: %d %s\e[m\n", feedback.feedback, feedback.message);
+
+    memset(&(feedback.message), 0, sizeof (feedback.message));
+    memset(&(user.username), 0, sizeof (user.username));
+    memset(&(user.password), 0, sizeof (user.password));
+
+    n = recv(new_socket, &user, sizeof(user), 0);
   }
-  if(send(new_socket, &feedback, sizeof(feedback), 0) < 0)
-    printf("Send feedback failed\n");
-  else
-    printf("\e[0;35mFeedback: %d %s\e[m\n", feedback.feedback, feedback.message);
   return 0;
 }
 
@@ -41,21 +48,25 @@ void* mail_service(void *arg)
   printf("\n\e[0;36mⓘ Mail service\e[m\n");
   int new_socket = *((int *)arg);
   Mail mail;
-  recv(new_socket, &mail, sizeof(mail), 0);
-  printf("Got message \"%s\". Passing to incoming server.\n", mail.topic);
 
-  // Here normal server would check receiver's address domain and choose proper incoming server, but since we've got only one, we pass it there.
 
-  int other_server_socket;
-  struct sockaddr_in server_addr;
+  int n = recv(new_socket, &mail, sizeof(mail), 0);
+  while (n>0){
+    printf("Got message \"%s\". Passing to incoming server.\n", mail.topic);
 
-  create_socket(SERVER_IN_ADDR, SERVER_IN_PORT_INNER, &server_addr, &other_server_socket); //TODO: przenieść do maina?
-  connect(other_server_socket, (struct sockaddr *) &server_addr, sizeof server_addr);
+    // Here normal server would check receiver's address domain and choose proper incoming server, but since we've got only one, we pass it there.
 
-  Feedback feedback = {.feedback=0, .message="mail sent"};
-  send(other_server_socket, &mail, sizeof(mail), 0);
-  send(new_socket, &feedback, sizeof(feedback), 0);
+    int other_server_socket;
+    struct sockaddr_in server_addr;
 
+    create_socket(SERVER_IN_ADDR, SERVER_IN_PORT_INNER, &server_addr, &other_server_socket); //TODO: przenieść do maina?
+    connect(other_server_socket, (struct sockaddr *) &server_addr, sizeof server_addr);
+
+    Feedback feedback = {.feedback=0, .message="mail sent"};
+    send(other_server_socket, &mail, sizeof(mail), 0);
+    send(new_socket, &feedback, sizeof(feedback), 0);
+    n = recv(new_socket, &mail, sizeof(mail), 0);
+  }
   pthread_exit(NULL);
 }
 

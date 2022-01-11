@@ -33,14 +33,13 @@ void add_user(User* user){
 
 User* find_user(char* username){
   for(int i=0; i<=users_num; i++){
-    printf("%d %s %s\n", i, users[i].username, username);
     if (strcmp(users[i].username, username) == 0){
-      printf("found user\n");
+      printf("found user %s\n", username);
       return users + i;
     }
   }
 
-  printf("user not found\n");
+  printf("user %s not found\n", username);
   return NULL;
 }
 
