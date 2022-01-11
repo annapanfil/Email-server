@@ -20,6 +20,7 @@ int main(){
 
   Mail mail = {.from = "me@me.me", .to = "other@oth.oth", .topic = "Mytopic", .text = "My text\nwith enter"};
   User user = {.id = 1, .username="anna", .password="qwerty"};
+  Feedback feedback;
 
   // Mail mail_rcv;
   struct sockaddr_in server_addr;
@@ -49,12 +50,12 @@ int main(){
   else
     printf("User sent\n");
 
-  // if(recv(clientSocket, &mail_rcv, sizeof(mail_rcv), 0) < 0)
-  // {
-  //   printf("Receive failed\n");
-  // }
-  //
-  // printf("Topic: %s\n%s\n", mail_rcv.topic, mail_rcv.text);
+  if(recv(server_out_user_socket, &feedback, sizeof(feedback), 0) < 0)
+  {
+    printf("Receive failed\n");
+  }
+
+  printf("Feedback: %d %s\n", feedback.feedback, feedback.message);
 
   close(server_out_mail_socket);
   close(server_out_user_socket);

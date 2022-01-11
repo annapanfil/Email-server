@@ -21,14 +21,20 @@ void* get_interaction(void* arg){
 
   int new_socket = *((int*)arg);
   User user;
+  Feedback feedback;
   recv(new_socket, &user, sizeof(user), 0);
   printf("Type: %d\n", user.id);
 
   switch (user.id){
-    case 1: new_user(user.username, user.password, users); break;
+    case 1: feedback = new_user(user.username, user.password, users); break;
   //   case 2: login_user(user.username, user.password, users, users_num, active_users, active_users_num); break;
   //   case 3: logout_user(user.username, active_users, active_users_num); break;
   }
+  printf("Feedback: %d %s\n", feedback.feedback, feedback.message);
+  if(send(new_socket, &feedback, sizeof(feedback), 0) < 0)
+    printf("Send feedback failed\n");
+  else
+    printf("Feedback sent\n");
   return 0;
 }
 
@@ -48,38 +54,12 @@ void* mail_service(void *arg)
   create_socket(SERVER_IN_ADDR, SERVER_IN_PORT_INNER, &server_addr, &other_server_socket); //TODO: przenieść do maina?
   connect(other_server_socket, (struct sockaddr *) &server_addr, sizeof server_addr);
 
+  Feedback feedback = {.feedback=0, .message="mail sent"};
   send(other_server_socket, &mail, sizeof(mail), 0);
-  // send(new_socket, &mail, sizeof(mail), 0); //return to client TODO: delete
+  send(new_socket, &feedback, sizeof(feedback), 0);
 
   pthread_exit(NULL);
 }
-
-//
-// void server_listen(int server_socket){
-//   int new_socket;
-//   struct sockaddr_storage serverStorage;
-//   socklen_t addr_size;
-//
-//   //Listen on the socket
-//   if(listen(server_socket, 50) == 0)
-//     printf("Listening mail thread\n");
-//   else
-//     printf("Error in mail thread\n");
-//
-//   pthread_t thread_id;
-//
-//   while(1)
-//   {
-//       //Accept call creates a new socket for the incoming connection
-//       addr_size = sizeof serverStorage;
-//       new_socket = accept(server_socket, (struct sockaddr *) &serverStorage, &addr_size);
-//
-//       if(pthread_create(&thread_id, NULL, mail_service, &new_socket) != 0 )
-//          printf("Failed to create mail thread\n");
-//
-//       pthread_detach(thread_id);
-//   }
-// }
 
 
 void* server_users(void* arg){

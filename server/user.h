@@ -16,12 +16,17 @@ typedef struct User{
   int id; //TODO: enum for types
   char username[USERNAME_LEN];
   char password[PASSWORD_LEN];
-  RcvdMail* mailbox;
 } User;
 
 
+typedef struct Mailbox{
+  char username[USERNAME_LEN];
+  RcvdMail* mails;
+} Mailbox;
+
+
 /* create user with given credentials */
-void new_user(char* username, char* password, User* user_place);
+Feedback new_user(char* username, char* password, User* user_place);
 
 /* validate password and log user (or not) - add to active users list */
 int login_user(char* username, char* password, User* users, int users_num, User* active_user_place);

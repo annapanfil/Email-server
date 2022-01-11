@@ -1,5 +1,17 @@
 #ifndef CONFIG_H
 #define CONFIG_H
+/*TODO:
+- server incoming - dodać socket world i feedback
+- send_mail - sprawdzenie czy odbiorca istnieje, dodanie wiadomości do mailboxa
+- logowanie - dodać do listy, wysłać feedback
+- wylogowanie
+- new user - sprawdzić czy nazwa użytkownika istnieje
+- pull mails
+
+sprawdzenie siły hasła po stronie klienta
+hasło nieszyfrowane
+*/
+
 
 //https://stackoverflow.com/questions/16508685/understanding-inaddr-any-for-socket-programming/16510000
 

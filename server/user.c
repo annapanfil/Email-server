@@ -1,17 +1,22 @@
 #include "user.h"
+#include "mail.h"
 #include "usertables.c"
 
-void new_user(char* username, char* password, User* user_place){
+Feedback new_user(char* username, char* password, User* user_place){
   //TODO: check if username exists
 
   User* user = (User*) malloc(sizeof(User));
   strcpy(user->username, username);
   strcpy(user->password, password);
-  user->mailbox = NULL;
 
+  //TODO: check if user exists
   add_user(user);
 
   printf("New user %s created\n", username);
+
+  Feedback feedback = {.feedback=0, .message="user created"};
+
+  return feedback;
 }
 
 

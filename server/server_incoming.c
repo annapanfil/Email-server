@@ -14,28 +14,60 @@
 #include "mail.h"
 #include "config.h"
 #include "server_base.c"
+#include "user.h"
 
 pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
-Mail* mails[MAX_CLIENTS];
+Mailbox mailboxes[MAX_CLIENTS];
+int mailboxes_num;
 
-void add_to_mailbox(Mail mail){
-  //TODO
+
+char* get_recipient(Mail* mail){
+  char* recipient;
+  recipient = strdup(mail->to);
+  recipient = strsep(&recipient, "@");
+  printf("%s -> %s\n", mail->to, recipient);
+
+  return recipient;
+}
+
+Mailbox* find_mailbox(char* username){
+  //find existing mailbox...
+  for (int i=0; i<mailboxes_num; i++){
+      if (strcmp(username, mailboxes[i].username) == 0)
+        return &mailboxes[i];
+  }
+
+  //...or create a new one
+  Mailbox* mailbox = (Mailbox*) malloc(sizeof(Mailbox));
+  strcpy(mailbox->username, username);
+  mailbox->mails = NULL;
+  mailbox[mailboxes_num] = *mailbox;
+  mailboxes_num += 1; //TODO: mutex?
+  return mailboxes + mailboxes_num;
+}
+
+
+Mailbox* add_to_mailbox(Mail mail, char* username){
+  Mailbox* mailbox = find_mailbox(username);
+  RcvdMail* new_mail = (RcvdMail*) malloc(sizeof(RcvdMail));
+  new_mail->mail = mail;
+  new_mail->next = mailbox->mails;
+  mailbox->mails = new_mail;
+
+  return mailbox;
 }
 
 
 void* get_mail(void *arg)
 {
   int new_socket = *((int *)arg);
-  int n;
-  Mail mail;
-  for(;;){
-    n=recv(new_socket, &mail, 2000, 0);
-    printf("Got message: \"%s\"\n", mail.topic);
-    if(n<1){
-        break;
-    }
-  add_to_mailbox(mail);
-  }
+  Mail mail;  //TODO: malloc?
+  recv(new_socket, &mail, sizeof(mail), 0);
+
+  printf("Got message: \"%s\"\n", mail.topic);
+  char* recipient = get_recipient(&mail);
+  Mailbox* mailbox = add_to_mailbox(mail, recipient);
+  printf("Added to %s's mailbox: %s\n", recipient, mailbox->mails->mail.topic);
   return 0;
 }
 
