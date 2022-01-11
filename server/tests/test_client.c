@@ -12,32 +12,53 @@
 
 #include "../config.h"
 #include "../mail.h"
+#include "../server_base.c"
+#include "../user.h"
+
 
 int main(){
 
   Mail mail = {.from = "me@me.me", .to = "other@oth.oth", .topic = "Mytopic", .text = "My text\nwith enter"};
-  Mail mail_rcv;
+  User user = {.id = 1, .username="anna", .password="qwerty"};
 
-  struct sockaddr_in serverAddr = {.sin_family = AF_INET, .sin_port = htons(SERVER_OUT_PORT_MAIL), .sin_addr.s_addr = inet_addr(SERVER_OUT_ADDR)}; //Settings of the server address
-  memset(serverAddr.sin_zero, '\0', sizeof serverAddr.sin_zero);
+  // Mail mail_rcv;
+  struct sockaddr_in server_addr;
+  int server_out_mail_socket, server_out_user_socket,
+  server_in_socket;
 
-  int clientSocket = socket(PF_INET, SOCK_STREAM, 0);
+  create_socket(SERVER_OUT_ADDR, SERVER_OUT_PORT_MAIL, &server_addr, &server_out_mail_socket);
 
-  connect(clientSocket, (struct sockaddr *) &serverAddr, sizeof serverAddr);
+  connect(server_out_mail_socket, (struct sockaddr *) &server_addr, sizeof server_addr);
 
-  if( send(clientSocket, &mail, sizeof(mail), 0) < 0)
+  create_socket(SERVER_OUT_ADDR, SERVER_OUT_PORT_USER, &server_addr, &server_out_user_socket);
+
+  connect(server_out_user_socket, (struct sockaddr *) &server_addr, sizeof server_addr);
+
+
+  if( send(server_out_mail_socket, &mail, sizeof(mail), 0) < 0)
   {
     printf("Send failed\n");
   }
+  else
+    printf("Mail sent\n");
 
-  if(recv(clientSocket, &mail_rcv, sizeof(mail_rcv), 0) < 0)
+  if( send(server_out_user_socket, &user, sizeof(user), 0) < 0)
   {
-    printf("Receive failed\n");
+    printf("Send failed\n");
   }
+  else
+    printf("User sent\n");
 
-  printf("Topic: %s\n%s\n", mail_rcv.topic, mail_rcv.text);
+  // if(recv(clientSocket, &mail_rcv, sizeof(mail_rcv), 0) < 0)
+  // {
+  //   printf("Receive failed\n");
+  // }
+  //
+  // printf("Topic: %s\n%s\n", mail_rcv.topic, mail_rcv.text);
 
-  close(clientSocket);
+  close(server_out_mail_socket);
+  close(server_out_user_socket);
+  // close(server_in_socket);
 
   return 0;
 }

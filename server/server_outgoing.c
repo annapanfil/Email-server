@@ -13,14 +13,7 @@
 #include "config.h"
 #include "server_base.c"
 #include "user.c"
-
-#define MAX_USERS 100
-
-User users[MAX_USERS];
-int users_num = 0;
-User active_users[MAX_USERS];
-int active_users_num = 0;
-// TODO: mutexy dla nich
+#include "usertables.c" //init_mutexes
 
 // ---------------------------------------------------------------------------
 
@@ -31,11 +24,11 @@ void* get_interaction(void* arg){
   recv(new_socket, &user, sizeof(user), 0);
   printf("Type: %d\n", user.id);
 
-  // switch (user.id){
-  //   case 1: new_user(user.username, user.password, users, users_num); break;
+  switch (user.id){
+    case 1: new_user(user.username, user.password, users); break;
   //   case 2: login_user(user.username, user.password, users, users_num, active_users, active_users_num); break;
   //   case 3: logout_user(user.username, active_users, active_users_num); break;
-  // }
+  }
   return 0;
 }
 
@@ -94,36 +87,13 @@ void* server_users(void* arg){
   int server_socket = *((int*)arg);
 
   server_listen(server_socket, get_interaction);
-  // int new_socket;
-  // struct sockaddr_storage serverStorage;
-  // socklen_t addr_size;
-  //
-  // //Listen on the socket
-  // if(listen(server_socket, 50) == 0)
-  //   printf("Listening on users thread\n");
-  // else
-  //   printf("Error in users thread\n");
-  //
-  // pthread_t thread_id;
-  //
-  //
-  // while(1)
-  // {
-  //     //Accept call creates a new socket for the incoming connection
-  //     addr_size = sizeof serverStorage;
-  //     new_socket = accept(server_socket, (struct sockaddr *) &serverStorage, &addr_size);
-  //
-  //     if(pthread_create(&thread_id, NULL, get_interaction, &new_socket) != 0 )
-  //        printf("Failed to create thread\n");
-  //
-  //     pthread_detach(thread_id);
-  // }
   return 0;
 }
 
 int main(){
   int user_interaction_socket = create_server_socket(SERVER_OUT_ADDR, SERVER_OUT_PORT_USER);
   int mail_socket = create_server_socket(SERVER_OUT_ADDR, SERVER_OUT_PORT_MAIL);
+  init_mutexes();
 
   /* create thread to controll user interaction and to receive mails*/
   pthread_t thread_id;
@@ -133,5 +103,7 @@ int main(){
   pthread_detach(thread_id);
 
   server_listen(mail_socket, mail_service);
+
+  //TODO: exit nicely (close sockets, remove users from memory, destroy mutexes)
   return 0;
 }

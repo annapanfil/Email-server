@@ -1,17 +1,17 @@
 #include "user.h"
+#include "usertables.c"
 
-void new_user(char* username, char* password, User* user_place, int id){
+void new_user(char* username, char* password, User* user_place){
   //TODO: check if username exists
 
   User* user = (User*) malloc(sizeof(User));
-  // user->id = id;
   strcpy(user->username, username);
   strcpy(user->password, password);
   user->mailbox = NULL;
 
-  *user_place = *user;
+  add_user(user);
 
-  printf("New user %s created with id %d\n", username, id);
+  printf("New user %s created\n", username);
 }
 
 
