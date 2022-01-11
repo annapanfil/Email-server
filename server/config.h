@@ -2,13 +2,9 @@
 #define CONFIG_H
 /*TODO:
 - server incoming - dodać socket world i feedback
-- send_mail - sprawdzenie czy odbiorca istnieje, dodanie wiadomości do mailboxa
-- logowanie - dodać do listy, wysłać feedback
-- wylogowanie
-- new user - sprawdzić czy nazwa użytkownika istnieje
 - pull mails
 
-sprawdzenie siły hasła po stronie klienta
+sprawdzenie poprawności hasła po stronie klienta
 hasło nieszyfrowane
 */
 
@@ -21,7 +17,8 @@ const int SERVER_OUT_PORT_MAIL = 1101;
 
 const char* SERVER_IN_ADDR = "127.0.0.1";
 const int SERVER_IN_PORT_WORLD = 5000;
-const int SERVER_IN_PORT_INNER = 5001;
+const int SERVER_IN_PORT_MAIL = 5001;
+const int SERVER_IN_PORT_INNER = 5002;
 
 
 #define MAX_CLIENTS 100

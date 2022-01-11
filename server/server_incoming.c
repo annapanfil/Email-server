@@ -15,37 +15,19 @@
 #include "config.h"
 #include "server_base.c"
 #include "user.h"
+#include "server_incoming_inner.c"
+#include "server_incoming_world.c"
 
 pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
-Mailbox mailboxes[MAX_CLIENTS];
-int mailboxes_num;
-
-
-Mailbox* find_mailbox(char* username){
-  //find existing mailbox...
-  for (int i=0; i<=mailboxes_num; i++){
-      if (strcmp(username, mailboxes[i].username) == 0){
-        printf("Found mailbox\n");
-        return mailboxes + i;
-      }
-  }
-
-  //...or create a new one
-  printf("Create a new one\n");
-  Mailbox* mailbox = (Mailbox*) malloc(sizeof(Mailbox));
-  strcpy(mailbox->username, username);
-  mailbox->mails = NULL;
-  mailboxes[mailboxes_num] = *mailbox;
-  mailboxes_num += 1; //TODO: mutex?
-  return mailboxes + mailboxes_num;
-}
 
 
 Mailbox* add_to_mailbox(Mail mail, char* username){
   printf("\n\e[0;36mⓘ Add to mailbox\e[m\n");
-  Mailbox* mailbox = find_mailbox(username);
+  Mailbox* mailbox = find_mailbox(username, true);
   RcvdMail* new_mail = (RcvdMail*) malloc(sizeof(RcvdMail));
-  new_mail->mail = mail;
+  new_mail->mail = *(Mail*) malloc(sizeof(mail));
+  strcpy(new_mail->mail.topic, mail.topic);
+  // new_mail->mail = mail;
   new_mail->next = mailbox->mails;
   mailbox->mails = new_mail;
 
@@ -56,7 +38,7 @@ Mailbox* add_to_mailbox(Mail mail, char* username){
 void* get_mail(void *arg)
 {
   int new_socket = *((int *)arg);
-  Mail mail;  //TODO: malloc?
+  Mail mail;
   recv(new_socket, &mail, sizeof(mail), 0);
 
   printf("Got message: \"%s\"\n", mail.topic);
@@ -67,9 +49,30 @@ void* get_mail(void *arg)
 }
 
 
+void* mail_server(void* arg){
+  int socket = *((int *)arg);
+  server_listen(socket, get_mail);
+  return 0;
+}
+
+
 int main(){
-  //TODO: add world_socket
+  int world_socket = create_server_socket(SERVER_IN_ADDR, SERVER_IN_PORT_WORLD);
+  int mail_socket = create_server_socket(SERVER_IN_ADDR, SERVER_IN_PORT_MAIL);
   int inner_socket = create_server_socket(SERVER_IN_ADDR, SERVER_IN_PORT_INNER);
-  server_listen(inner_socket, get_mail);
+
+  pthread_t mail_thread_id;
+  if(pthread_create(&mail_thread_id, NULL, mail_server, &mail_socket) != 0 )
+     printf("Failed to create thread mail\n");
+
+  pthread_detach(mail_thread_id);
+
+  pthread_t inner_thread_id;
+  if(pthread_create(&inner_thread_id, NULL, inner_server, &inner_socket) != 0 )
+     printf("Failed to create thread inner\n");
+
+  pthread_detach(inner_thread_id);
+
+  server_listen(world_socket, give_mails);
   return 0;
 }

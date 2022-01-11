@@ -69,7 +69,7 @@ void* mail_service(void *arg)
         int other_server_socket;
         struct sockaddr_in server_addr;
 
-        create_socket(SERVER_IN_ADDR, SERVER_IN_PORT_INNER, &server_addr, &other_server_socket); //TODO: przenieść do maina?
+        create_socket(SERVER_IN_ADDR, SERVER_IN_PORT_MAIL, &server_addr, &other_server_socket); //TODO: przenieść do maina?
         connect(other_server_socket, (struct sockaddr *) &server_addr, sizeof server_addr);
 
         feedback.feedback = 0;
