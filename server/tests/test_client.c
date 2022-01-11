@@ -16,7 +16,7 @@
 
 int main(){
 
-  Mail mail = {.from = "me@me.me", .to = "other2@oth.oth", .topic = "Mytopic", .text = "My text\nwith enter"};
+  Mail mail = {.from = "anna@me.me", .to = "dan@oth.oth", .topic = "Mytopic", .text = "My text\nwith enter"};
   User user = {.id = 1, .username="anna", .password="qwerty"};
   Feedback feedback;
 
@@ -33,12 +33,7 @@ int main(){
 
   connect(server_out_user_socket, (struct sockaddr *) &server_addr, sizeof server_addr);
 
-  //send mail
-  send(server_out_mail_socket, &mail, sizeof(mail), 0);
-  recv(server_out_mail_socket, &feedback, sizeof(feedback), 0);
-  printf("Feedback: %d %s\n", feedback.feedback, feedback.message);
-
-  //send mail
+  //send mail - not logged in
   send(server_out_mail_socket, &mail, sizeof(mail), 0);
   recv(server_out_mail_socket, &feedback, sizeof(feedback), 0);
   printf("Feedback: %d %s\n", feedback.feedback, feedback.message);
@@ -66,9 +61,26 @@ int main(){
 
   // login wrong user
   user.id = 2;
-  strcpy(user.username, "Dan");
+  strcpy(user.username, "dan");
   send(server_out_user_socket, &user, sizeof(user), 0);
   recv(server_out_user_socket, &feedback, sizeof(feedback), 0);
+  printf("Feedback: %d %s\n", feedback.feedback, feedback.message);
+
+  //send mail - wrong address
+  send(server_out_mail_socket, &mail, sizeof(mail), 0);
+  recv(server_out_mail_socket, &feedback, sizeof(feedback), 0);
+  printf("Feedback: %d %s\n", feedback.feedback, feedback.message);
+
+  // create user
+  user.id = 1;
+  strcpy(user.username, "dan");
+  send(server_out_user_socket, &user, sizeof(user), 0);
+  recv(server_out_user_socket, &feedback, sizeof(feedback), 0);
+  printf("Feedback: %d %s\n", feedback.feedback, feedback.message);
+
+  //send mail - successful
+  send(server_out_mail_socket, &mail, sizeof(mail), 0);
+  recv(server_out_mail_socket, &feedback, sizeof(feedback), 0);
   printf("Feedback: %d %s\n", feedback.feedback, feedback.message);
 
   //logout
@@ -78,7 +90,14 @@ int main(){
   recv(server_out_user_socket, &feedback, sizeof(feedback), 0);
   printf("Feedback: %d %s\n", feedback.feedback, feedback.message);
 
-  // close(server_out_mail_socket);
+  //logout
+  user.id = 3;
+  strcpy(user.username, "dan");
+  send(server_out_user_socket, &user, sizeof(user), 0);
+  recv(server_out_user_socket, &feedback, sizeof(feedback), 0);
+  printf("Feedback: %d %s\n", feedback.feedback, feedback.message);
+
+  close(server_out_mail_socket);
   close(server_out_user_socket);
   // close(server_in_socket);
   return 0;

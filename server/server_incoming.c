@@ -21,15 +21,6 @@ Mailbox mailboxes[MAX_CLIENTS];
 int mailboxes_num;
 
 
-char* get_recipient(Mail* mail){
-  char* recipient;
-  recipient = strdup(mail->to);
-  recipient = strsep(&recipient, "@");
-  // printf("%s -> %s\n", mail->to, recipient);
-
-  return recipient;
-}
-
 Mailbox* find_mailbox(char* username){
   //find existing mailbox...
   for (int i=0; i<=mailboxes_num; i++){

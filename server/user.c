@@ -3,12 +3,15 @@
 #include "usertables.c"
 
 Feedback new_user(char* username, char* password){
-  printf("\n\e[0;36mⓘ New user\e[m\n");
+  printf("\n\e[0;36mⓘ New user %s\e[m\n", username);
   User* user = (User*) malloc(sizeof(User));
   strcpy(user->username, username);
   strcpy(user->password, password);
 
-  //TODO: check if user exists
+  if(find_user(username)){
+    Feedback feedback = {.feedback=1, .message="user already exists"};
+    return feedback;
+  }
   add_user(user);
 
   printf("New user %s created\n", username);
@@ -20,12 +23,11 @@ Feedback new_user(char* username, char* password){
 
 
 Feedback login_user(char* username, char* password){
-  printf("\n\e[0;36mⓘ Login\e[m\n");
+  printf("\n\e[0;36mⓘ Login %s\e[m\n", username);
   Feedback feedback;
 
   //look for the user
   User* user = find_user(username);
-  // printf("%s\n", user->username);
   if (user){
       //check password
       if(strcmp(user->password, password) == 0){
@@ -49,6 +51,7 @@ Feedback login_user(char* username, char* password){
 
 
 Feedback logout_user(char* username){
+  printf("\n\e[0;36mⓘ Logout %s\e[m\n", username);
   rm_active_user(username);
   Feedback feedback = {.feedback=0, .message="logged out"};
   return feedback;

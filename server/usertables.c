@@ -1,11 +1,12 @@
 /*My pretty database*/
 #ifndef USERTABLES_C
 #define USERTABLES_C
+#include "user.h"
 
 #define MAX_USERS 100
 
 typedef struct UserInList{
-  char* username;
+  char username[USERNAME_LEN];
   struct UserInList* next;
 } UserInList;
 
@@ -45,7 +46,7 @@ User* find_user(char* username){
 
 void add_active_user(char* username){
   UserInList* new_active_user = (UserInList*) malloc(sizeof(UserInList));
-  new_active_user->username = username;
+  strcpy(new_active_user->username, username);
   pthread_mutex_lock(&lock_active_users);
   new_active_user->next = active_users;
   active_users = new_active_user;
@@ -56,7 +57,7 @@ void add_active_user(char* username){
 UserInList* find_active_user(char* username){
   UserInList* current = active_users;
   while (current){
-    if (current->username == username){
+    if (strcmp(current->username, username) == 0){
       return current;
     }
     current = current->next;
@@ -70,7 +71,7 @@ void rm_active_user(char* username){
   UserInList* current = active_users;
   pthread_mutex_lock(&lock_active_users);
   while (current){
-    if (current->username == username){
+    if (strcmp(current->username, username) == 0){
       previous->next = current->next;
       pthread_mutex_unlock(&lock_active_users);
       free(current);
