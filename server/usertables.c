@@ -1,4 +1,4 @@
-/*My pretty database*/
+/*Users data structures - quasi database*/
 #ifndef USERTABLES_C
 #define USERTABLES_C
 #include "user.h"
@@ -10,11 +10,11 @@ typedef struct UserInList{
   struct UserInList* next;
 } UserInList;
 
-User users[MAX_USERS];
+User users[MAX_USERS];  //all registered users
 int users_num = 0;
 pthread_mutex_t lock_users;
 
-UserInList* active_users = NULL; //hashtable would be better I think
+UserInList* active_users = NULL; //logged in users
 pthread_mutex_t lock_active_users;
 
 
@@ -25,6 +25,7 @@ void init_mutexes(){
     printf("Mutex (active users) init failed\n");
 }
 
+//------------------------------------------------
 void add_user(User* user){
   pthread_mutex_lock(&lock_users);
   users[users_num] = *user;
@@ -32,21 +33,21 @@ void add_user(User* user){
   pthread_mutex_unlock(&lock_users);
 }
 
+
 User* find_user(char* username){
   for(int i=0; i<=users_num; i++){
     if (strcmp(users[i].username, username) == 0){
-      printf("found user %s\n", username);
-      return users + i;
+      return users + i; //found
     }
   }
-
-  printf("user %s not found\n", username);
-  return NULL;
+  return NULL; //not found
 }
 
+//-----------------------------------------------------------------------
 void add_active_user(char* username){
   UserInList* new_active_user = (UserInList*) malloc(sizeof(UserInList));
   strcpy(new_active_user->username, username);
+
   pthread_mutex_lock(&lock_active_users);
   new_active_user->next = active_users;
   active_users = new_active_user;

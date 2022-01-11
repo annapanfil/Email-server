@@ -1,15 +1,10 @@
 #ifndef CONFIG_H
 #define CONFIG_H
-/*TODO:
-- server incoming - dodać socket world i feedback
-- pull mails
 
+/*
 sprawdzenie poprawności hasła po stronie klienta
 hasło nieszyfrowane
 */
-
-
-//https://stackoverflow.com/questions/16508685/understanding-inaddr-any-for-socket-programming/16510000
 
 const char* SERVER_OUT_ADDR = "127.0.0.1";
 const int SERVER_OUT_PORT_USER = 1100;

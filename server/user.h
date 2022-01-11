@@ -5,24 +5,11 @@
 #define USERNAME_LEN 256
 #define PASSWORD_LEN 30
 
-
-typedef struct RcvdMail{
-  Mail mail;
-  struct RcvdMail* next; //beginning of the linked list
-} RcvdMail;
-
-
 typedef struct User{
-  int id; //TODO: enum for types
+  int id;
   char username[USERNAME_LEN];
   char password[PASSWORD_LEN];
 } User;
-
-
-typedef struct Mailbox{
-  char username[USERNAME_LEN];
-  RcvdMail* mails;
-} Mailbox;
 
 
 /* create user with given credentials */

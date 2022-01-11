@@ -1,4 +1,4 @@
-/*Accepts connections from multiple clients, adds sender to the address book, read receiver's address from it and passes it to the other server. */
+/*Accepts mail pulling, stores mail data*/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -12,48 +12,15 @@
 #include <errno.h>
 
 #include "mail.h"
+#include "mailbox.h"
 #include "config.h"
 #include "server_base.c"
 #include "user.h"
 #include "server_incoming_inner.c"
 #include "server_incoming_world.c"
+#include "server_incoming_mail.c"
 
 pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
-
-
-Mailbox* add_to_mailbox(Mail mail, char* username){
-  printf("\n\e[0;36mⓘ Add to mailbox\e[m\n");
-  Mailbox* mailbox = find_mailbox(username, true);
-  RcvdMail* new_mail = (RcvdMail*) malloc(sizeof(RcvdMail));
-  new_mail->mail = *(Mail*) malloc(sizeof(mail));
-  strcpy(new_mail->mail.topic, mail.topic);
-  // new_mail->mail = mail;
-  new_mail->next = mailbox->mails;
-  mailbox->mails = new_mail;
-
-  return mailbox;
-}
-
-
-void* get_mail(void *arg)
-{
-  int new_socket = *((int *)arg);
-  Mail mail;
-  recv(new_socket, &mail, sizeof(mail), 0);
-
-  printf("Got message: \"%s\"\n", mail.topic);
-  char* recipient = get_recipient(&mail);
-  Mailbox* mailbox = add_to_mailbox(mail, recipient);
-  printf("Added to %s's mailbox: %s\n", recipient, mailbox->mails->mail.topic);
-  return 0;
-}
-
-
-void* mail_server(void* arg){
-  int socket = *((int *)arg);
-  server_listen(socket, get_mail);
-  return 0;
-}
 
 
 int main(){
