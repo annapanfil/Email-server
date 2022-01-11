@@ -27,6 +27,6 @@ void new_user(char* username, char* password, User* user_place, int id); // id o
 int login_user(char* username, char* password, User* users, int users_num, User* active_user_place);
 
 /*remove user from users list*/
-void logout_user(char* username);
+void logout_user(char* username, User* active_users, int* active_users_num);
 
 #endif //USER_H

@@ -9,18 +9,17 @@
 #include <pthread.h>
 #include <errno.h>
 
-void create_socket(const char* ip, const int port, struct sockaddr_in* server_addr, int* server_socket){
-  // int server_socket = create_socket(ip_addr, port);
-  //Configure server address
-  // *server_addr = {.sin_family = AF_INET, .sin_port = htons(port), .sin_addr.s_addr = inet_addr(ip)};
-  server_addr->sin_family = AF_INET;
-  server_addr->sin_port = htons(port);
-  server_addr->sin_addr.s_addr = inet_addr(ip);
-  memset(server_addr->sin_zero, '\0', sizeof server_addr->sin_zero);
+void create_socket(const char* ip, const int port, struct sockaddr_in* address, int* new_socket){
+
+  //Configure address
+  address->sin_family = AF_INET;
+  address->sin_port = htons(port);
+  address->sin_addr.s_addr = inet_addr(ip);
+  memset(address->sin_zero, '\0', sizeof address->sin_zero);
 
   //Create the socket
-  *server_socket = socket(PF_INET, SOCK_STREAM, 0);
-  if (*server_socket == -1){
+  *new_socket = socket(PF_INET, SOCK_STREAM, 0);
+  if (*new_socket == -1){
     printf("Error creating socket");
     exit (EXIT_FAILURE);
   }
@@ -28,12 +27,9 @@ void create_socket(const char* ip, const int port, struct sockaddr_in* server_ad
 }
 
 
-void base(const char* ip_addr, const int port, void* (*client_f)(void*)){
-  /*create server socket, accept clients and run client_f on each*/
+int create_server_socket(const char* ip_addr, const int port){
+  /*create server socket*/
 
-  int new_socket;
-  struct sockaddr_storage serverStorage;
-  socklen_t addr_size;
   struct sockaddr_in server_addr;
   int server_socket;
   create_socket(ip_addr, port, &server_addr, &server_socket);
@@ -45,11 +41,20 @@ void base(const char* ip_addr, const int port, void* (*client_f)(void*)){
     exit(EXIT_FAILURE);
   }
 
+  return server_socket;
+}
+
+
+int server_listen(int server_socket, void* (*client_f)(void*)){
+  int new_socket;
+  struct sockaddr_storage serverStorage;
+  socklen_t addr_size;
+
   //Listen on the socket
   if(listen(server_socket, 50) == 0)
-    printf("Listening\n");
+    printf("Listening on %d\n", server_socket);
   else
-    printf("Error\n");
+    printf("Error while listening attempt\n");
 
   pthread_t thread_id;
 
@@ -59,13 +64,9 @@ void base(const char* ip_addr, const int port, void* (*client_f)(void*)){
       addr_size = sizeof serverStorage;
       new_socket = accept(server_socket, (struct sockaddr *) &serverStorage, &addr_size);
 
-      if( pthread_create(&thread_id, NULL, client_f, &new_socket) != 0 )
+      if(pthread_create(&thread_id, NULL, client_f, &new_socket) != 0 )
          printf("Failed to create thread\n");
 
       pthread_detach(thread_id);
   }
-}
-
-void login(){
-
 }

@@ -1,6 +1,8 @@
 #include "user.h"
 
 void new_user(char* username, char* password, User* user_place, int id){
+  //TODO: check if username exists
+
   User* user = (User*) malloc(sizeof(User));
   // user->id = id;
   strcpy(user->username, username);

@@ -10,15 +10,15 @@
 #include <unistd.h> // for close
 #include<pthread.h>
 
-#include "config.h"
-#include "mail.h"
+#include "../config.h"
+#include "../mail.h"
 
 int main(){
 
   Mail mail = {.from = "me@me.me", .to = "other@oth.oth", .topic = "Mytopic", .text = "My text\nwith enter"};
   Mail mail_rcv;
 
-  struct sockaddr_in serverAddr = {.sin_family = AF_INET, .sin_port = htons(SERVER_OUT_PORT), .sin_addr.s_addr = inet_addr(SERVER_OUT_ADDR)}; //Settings of the server address
+  struct sockaddr_in serverAddr = {.sin_family = AF_INET, .sin_port = htons(SERVER_OUT_PORT_MAIL), .sin_addr.s_addr = inet_addr(SERVER_OUT_ADDR)}; //Settings of the server address
   memset(serverAddr.sin_zero, '\0', sizeof serverAddr.sin_zero);
 
   int clientSocket = socket(PF_INET, SOCK_STREAM, 0);

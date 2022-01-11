@@ -12,4 +12,10 @@ typedef struct Mail{
   char text[TEXT_SIZE];
 } Mail;
 
+
+typedef struct Feedback{
+  int feedback;
+  char message[50];
+} Feedback;
+
 #endif // MAIL_H
