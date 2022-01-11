@@ -26,12 +26,12 @@ typedef struct Mailbox{
 
 
 /* create user with given credentials */
-Feedback new_user(char* username, char* password, User* user_place);
+Feedback new_user(char* username, char* password);
 
 /* validate password and log user (or not) - add to active users list */
-int login_user(char* username, char* password, User* users, int users_num, User* active_user_place);
+Feedback login_user(char* username, char* password);
 
 /*remove user from users list*/
-void logout_user(char* username, User* active_users, int* active_users_num);
+void logout_user(char* username);
 
 #endif //USER_H

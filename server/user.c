@@ -2,9 +2,8 @@
 #include "mail.h"
 #include "usertables.c"
 
-Feedback new_user(char* username, char* password, User* user_place){
-  //TODO: check if username exists
-
+Feedback new_user(char* username, char* password){
+  printf("\n\e[0;36mⓘ New user\e[m\n");
   User* user = (User*) malloc(sizeof(User));
   strcpy(user->username, username);
   strcpy(user->password, password);
@@ -20,25 +19,29 @@ Feedback new_user(char* username, char* password, User* user_place){
 }
 
 
-int login_user(char* username, char* password, User* users, int users_num, User* active_user_place){
+Feedback login_user(char* username, char* password){
+  printf("\n\e[0;36mⓘ Login\e[m\n");
+  Feedback feedback;
 
-  for(int i=0; i<users_num; i++){
-    if (strcmp(users[i].username, username) == 0){
-      if(strcmp(users[i].password, password) == 0){
+  //look for the user
+  User* user = find_user(username);
+  // printf("%s\n", user->username);
+  if (user){
+      //check password
+      if(strcmp(user->password, password) == 0){
         //QUESTION: encrypted?
-        printf("Logged %s\n", username);
-        //TODO: send message to client
-        *active_user_place = users[i];
-        return 0;
+        feedback.feedback = 0;
+        strcpy(feedback.message, "logged in");
+        return feedback;
       }
       else{
-        printf("Wrong password for %s\n", username);
-        //TODO: send message to client
-        return 2;
+        feedback.feedback = 2;
+        strcpy(feedback.message, "wrong password");
+        return feedback;
       }
-    }
   }
-  printf("Wrong username \"%s\"\n", username);
-  //TODO: send message to client
-  return 1;
+  feedback.feedback = 1;
+  strcpy(feedback.message, "wrong username");
+
+  return feedback;
 }

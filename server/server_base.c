@@ -23,7 +23,7 @@ void create_socket(const char* ip, const int port, struct sockaddr_in* address, 
     printf("Error creating socket");
     exit (EXIT_FAILURE);
   }
-  printf("%s:%d\n", ip, port);
+  // printf("%s:%d\n", ip, port);
 }
 
 
@@ -52,7 +52,7 @@ int server_listen(int server_socket, void* (*client_f)(void*)){
 
   //Listen on the socket
   if(listen(server_socket, 50) == 0)
-    printf("Listening on %d\n", server_socket);
+    printf("Listening...\n");
   else
     printf("Error while listening attempt\n");
 

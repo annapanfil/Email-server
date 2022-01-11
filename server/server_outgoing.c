@@ -23,24 +23,22 @@ void* get_interaction(void* arg){
   User user;
   Feedback feedback;
   recv(new_socket, &user, sizeof(user), 0);
-  printf("Type: %d\n", user.id);
-
   switch (user.id){
-    case 1: feedback = new_user(user.username, user.password, users); break;
-  //   case 2: login_user(user.username, user.password, users, users_num, active_users, active_users_num); break;
-  //   case 3: logout_user(user.username, active_users, active_users_num); break;
+    case 1: feedback = new_user(user.username, user.password); break;
+    case 2: feedback = login_user(user.username, user.password); break;
+  //   case 3: feedback = logout_user(user.username, active_users, active_users_num); break;
   }
-  printf("Feedback: %d %s\n", feedback.feedback, feedback.message);
   if(send(new_socket, &feedback, sizeof(feedback), 0) < 0)
     printf("Send feedback failed\n");
   else
-    printf("Feedback sent\n");
+    printf("\e[0;35mFeedback: %d %s\e[m\n", feedback.feedback, feedback.message);
   return 0;
 }
 
 
 void* mail_service(void *arg)
 {
+  printf("\n\e[0;36mⓘ Mail service\e[m\n");
   int new_socket = *((int *)arg);
   Mail mail;
   recv(new_socket, &mail, sizeof(mail), 0);

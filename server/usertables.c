@@ -32,6 +32,18 @@ void add_user(User* user){
   pthread_mutex_unlock(&lock_users);
 }
 
+User* find_user(char* username){
+  for(int i=0; i<=users_num; i++){
+    printf("%d %s %s\n", i, users[i].username, username);
+    if (strcmp(users[i].username, username) == 0){
+      printf("found user\n");
+      return users + i;
+    }
+  }
+
+  printf("user not found\n");
+  return NULL;
+}
 
 void add_active_user(User* user){
   // int id;

@@ -25,7 +25,7 @@ char* get_recipient(Mail* mail){
   char* recipient;
   recipient = strdup(mail->to);
   recipient = strsep(&recipient, "@");
-  printf("%s -> %s\n", mail->to, recipient);
+  // printf("%s -> %s\n", mail->to, recipient);
 
   return recipient;
 }
@@ -33,7 +33,6 @@ char* get_recipient(Mail* mail){
 Mailbox* find_mailbox(char* username){
   //find existing mailbox...
   for (int i=0; i<=mailboxes_num; i++){
-      printf("%d %s %s\n", mailboxes_num, mailboxes[i].username, username);
       if (strcmp(username, mailboxes[i].username) == 0){
         printf("Found mailbox\n");
         return mailboxes + i;
@@ -41,7 +40,7 @@ Mailbox* find_mailbox(char* username){
   }
 
   //...or create a new one
-  printf("create a new one\n");
+  printf("Create a new one\n");
   Mailbox* mailbox = (Mailbox*) malloc(sizeof(Mailbox));
   strcpy(mailbox->username, username);
   mailbox->mails = NULL;
@@ -52,6 +51,7 @@ Mailbox* find_mailbox(char* username){
 
 
 Mailbox* add_to_mailbox(Mail mail, char* username){
+  printf("\n\e[0;36mⓘ Add to mailbox\e[m\n");
   Mailbox* mailbox = find_mailbox(username);
   RcvdMail* new_mail = (RcvdMail*) malloc(sizeof(RcvdMail));
   new_mail->mail = mail;
