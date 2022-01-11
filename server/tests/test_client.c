@@ -38,12 +38,12 @@ int main(){
   // recv(server_out_mail_socket, &feedback, sizeof(feedback), 0);
   // printf("Feedback: %d %s\n", feedback.feedback, feedback.message);
 
-  // create user
+  // // create user
   // send(server_out_user_socket, &user, sizeof(user), 0);
   // recv(server_out_user_socket, &feedback, sizeof(feedback), 0);
   // printf("Feedback: %d %s\n", feedback.feedback, feedback.message);
 
-  //login successful
+  // login successful
   // user.id = 2;
   // strcpy(user.username, "anna");
   // strcpy(user.password, "qwerty");
@@ -61,13 +61,20 @@ int main(){
   // printf("Feedback: %d %s\n", feedback.feedback, feedback.message);
 
   //login wrong user
-  user.id = 2;
-  strcpy(user.username, "Dan");
+  // user.id = 2;
+  // strcpy(user.username, "Dan");
+  // send(server_out_user_socket, &user, sizeof(user), 0);
+  // recv(server_out_user_socket, &feedback, sizeof(feedback), 0);
+  // printf("Feedback: %d %s\n", feedback.feedback, feedback.message);
+
+  //logout
+  user.id = 3;
+  strcpy(user.username, "anna");
   send(server_out_user_socket, &user, sizeof(user), 0);
   recv(server_out_user_socket, &feedback, sizeof(feedback), 0);
   printf("Feedback: %d %s\n", feedback.feedback, feedback.message);
 
-  close(server_out_mail_socket);
+  // close(server_out_mail_socket);
   close(server_out_user_socket);
   // close(server_in_socket);
   return 0;

@@ -32,6 +32,6 @@ Feedback new_user(char* username, char* password);
 Feedback login_user(char* username, char* password);
 
 /*remove user from users list*/
-void logout_user(char* username);
+Feedback logout_user(char* username);
 
 #endif //USER_H

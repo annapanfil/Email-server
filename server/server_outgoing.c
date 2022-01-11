@@ -26,7 +26,7 @@ void* get_interaction(void* arg){
   switch (user.id){
     case 1: feedback = new_user(user.username, user.password); break;
     case 2: feedback = login_user(user.username, user.password); break;
-  //   case 3: feedback = logout_user(user.username, active_users, active_users_num); break;
+    case 3: feedback = logout_user(user.username); break;
   }
   if(send(new_socket, &feedback, sizeof(feedback), 0) < 0)
     printf("Send feedback failed\n");

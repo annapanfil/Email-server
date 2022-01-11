@@ -30,6 +30,7 @@ Feedback login_user(char* username, char* password){
       //check password
       if(strcmp(user->password, password) == 0){
         //QUESTION: encrypted?
+        add_active_user(username);
         feedback.feedback = 0;
         strcpy(feedback.message, "logged in");
         return feedback;
@@ -43,5 +44,12 @@ Feedback login_user(char* username, char* password){
   feedback.feedback = 1;
   strcpy(feedback.message, "wrong username");
 
+  return feedback;
+}
+
+
+Feedback logout_user(char* username){
+  rm_active_user(username);
+  Feedback feedback = {.feedback=0, .message="logged out"};
   return feedback;
 }
