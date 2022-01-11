@@ -1,37 +1,57 @@
 #include "user.h"
+#include "mail.h"
+#include "usertables.c"
 
-void new_user(char* username, char* password, User* user_place, int id){
+Feedback new_user(char* username, char* password){
+  /*Create new user (if not exists)*/
+  printf("\n\e[0;36mⓘ New user %s\e[m\n", username);
   User* user = (User*) malloc(sizeof(User));
-  // user->id = id;
   strcpy(user->username, username);
   strcpy(user->password, password);
-  user->mailbox = NULL;
 
-  *user_place = *user;
+  if(find_user(username)){
+    Feedback feedback = {.feedback=1, .message="user already exists"};
+    return feedback;
+  }
+  add_user(user);
 
-  printf("New user %s created with id %d\n", username, id);
+  Feedback feedback = {.feedback=0, .message="user created"};
+  return feedback;
 }
 
 
-int login_user(char* username, char* password, User* users, int users_num, User* active_user_place){
+Feedback login_user(char* username, char* password){
+  /*Add user to active users*/
+  printf("\n\e[0;36mⓘ Login %s\e[m\n", username);
+  Feedback feedback;
 
-  for(int i=0; i<users_num; i++){
-    if (strcmp(users[i].username, username) == 0){
-      if(strcmp(users[i].password, password) == 0){
-        //QUESTION: encrypted?
-        printf("Logged %s\n", username);
-        //TODO: send message to client
-        *active_user_place = users[i];
-        return 0;
+  //look for the user
+  User* user = find_user(username);
+  if (user){
+      //check password
+      if(strcmp(user->password, password) == 0){
+        add_active_user(username);
+        feedback.feedback = 0;
+        strcpy(feedback.message, "logged in");
+        return feedback;
       }
       else{
-        printf("Wrong password for %s\n", username);
-        //TODO: send message to client
-        return 2;
+        feedback.feedback = 2;
+        strcpy(feedback.message, "wrong password");
+        return feedback;
       }
-    }
   }
-  printf("Wrong username \"%s\"\n", username);
-  //TODO: send message to client
-  return 1;
+  feedback.feedback = 1;
+  strcpy(feedback.message, "wrong username");
+
+  return feedback;
+}
+
+
+Feedback logout_user(char* username){
+  /*Remove user from active users*/
+  printf("\n\e[0;36mⓘ Logout %s\e[m\n", username);
+  rm_active_user(username);
+  Feedback feedback = {.feedback=0, .message="logged out"};
+  return feedback;
 }

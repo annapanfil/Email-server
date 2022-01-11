@@ -12,4 +12,20 @@ typedef struct Mail{
   char text[TEXT_SIZE];
 } Mail;
 
+
+typedef struct Feedback{
+  int feedback;
+  char message[50];
+} Feedback;
+
+
+char* get_recipient(Mail* mail){
+  char* recipient;
+  recipient = strdup(mail->to);
+  recipient = strsep(&recipient, "@");
+  // printf("%s -> %s\n", mail->to, recipient);
+
+  return recipient;
+}
+
 #endif // MAIL_H
