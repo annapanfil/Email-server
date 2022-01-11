@@ -32,16 +32,20 @@ char* get_recipient(Mail* mail){
 
 Mailbox* find_mailbox(char* username){
   //find existing mailbox...
-  for (int i=0; i<mailboxes_num; i++){
-      if (strcmp(username, mailboxes[i].username) == 0)
-        return &mailboxes[i];
+  for (int i=0; i<=mailboxes_num; i++){
+      printf("%d %s %s\n", mailboxes_num, mailboxes[i].username, username);
+      if (strcmp(username, mailboxes[i].username) == 0){
+        printf("Found mailbox\n");
+        return mailboxes + i;
+      }
   }
 
   //...or create a new one
+  printf("create a new one\n");
   Mailbox* mailbox = (Mailbox*) malloc(sizeof(Mailbox));
   strcpy(mailbox->username, username);
   mailbox->mails = NULL;
-  mailbox[mailboxes_num] = *mailbox;
+  mailboxes[mailboxes_num] = *mailbox;
   mailboxes_num += 1; //TODO: mutex?
   return mailboxes + mailboxes_num;
 }
