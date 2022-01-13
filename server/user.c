@@ -58,7 +58,7 @@ Feedback logout_user(char* username){
 }
 
 
-Feedback is_logged_email_pull (char* username, struct sockaddr user_address){
+Feedback is_logged_email_pull (char* username, struct sockaddr_storage user_address){
   /*Check if user is logged in and send their data to the other server */
   Feedback feedback;
 

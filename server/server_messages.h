@@ -5,7 +5,7 @@
 
 typedef struct Userdata{
   char username[USERNAME_LEN];
-  struct sockaddr user_addr;
+  struct sockaddr_storage user_addr;
 } Userdata;
 
 #endif //SERVER_MSGS_H

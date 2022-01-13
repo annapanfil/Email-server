@@ -1,12 +1,19 @@
 void* get_interaction(void* arg){
   /*user creation, login and logout*/
-  int new_socket = *((int*)arg);
+  typedef struct Args{
+    int socket;
+    struct sockaddr_storage address;
+  }Args;
+
+  int new_socket = ((Args*)arg)->socket;
+  struct sockaddr_storage user_addr = ((Args*) arg)-> address;
+
+  // int new_socket = *((int*)arg);
   User user;
   Feedback feedback;
-  struct sockaddr user_addr;
-  socklen_t addr_len = sizeof(user_addr);
 
-  int n = recvfrom(new_socket, &user, sizeof(user), 0, &user_addr, &addr_len);
+  int n = recv(new_socket, &user, sizeof(user), 0);
+
   while (n>0){
     switch (user.id){
       case 1: feedback = new_user(user.username, user.password); break;
@@ -36,6 +43,6 @@ void* get_interaction(void* arg){
 void* server_users(void* arg){
   //wait for requests
   int server_socket = *((int*)arg);
-  server_listen(server_socket, get_interaction);
+  server_listen_get_addr(server_socket, get_interaction);
   return 0;
 }

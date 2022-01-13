@@ -67,12 +67,11 @@ void* give_mails(void* arg){
   int n = recv(other_server_socket, &userdata, sizeof(userdata), 0);
   printf("%d %s\n", n, userdata.username);
 
+  //TODO: change to udp
   //create a socket for the client
   int client_socket = socket(PF_INET, SOCK_STREAM, 0);
-  // struct sockaddr_in server_addr;
 
-  // create_socket(SERVER_IN_ADDR, SERVER_IN_PORT_MAIL, &server_addr, &client_socket);
-  if (connect(client_socket, &userdata.user_addr, sizeof userdata.user_addr) != 0){
+  if (connect(client_socket, (struct sockaddr * )&userdata.user_addr, sizeof userdata.user_addr) == -1){
       printf("Cannot connect to client\n");
       return 0;
   }

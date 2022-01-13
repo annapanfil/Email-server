@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <fcntl.h> // for open
 #include <unistd.h> // for close
-#include<pthread.h>
+#include <pthread.h>
 
 #include "../config.h"
 #include "../mail.h"
@@ -35,7 +35,6 @@ int main(){
   create_socket(SERVER_IN_ADDR, SERVER_IN_PORT_PULL_MAIL, &server_addr, &server_in_socket);
 
   connect(server_in_socket, (struct sockaddr *) &server_addr, sizeof server_addr);
-
   // //send mail - not logged in
   // send(server_out_mail_socket, &mail, sizeof(mail), 0);
   // recv(server_out_mail_socket, &feedback, sizeof(feedback), 0);
@@ -102,21 +101,22 @@ int main(){
 
   if(send(server_out_user_socket, &user, sizeof(user), 0)>0)
     printf("sent\n");
+
   recv(server_out_user_socket, &feedback, sizeof(feedback), 0);
   printf("Feedback %d %s\n", feedback.feedback, feedback.message);
   if (feedback.feedback == 0){
     Mail mail_rcv = {.to="a"};
-    int i = 0;
     printf("Reading mails...\n");
-    while(!(strcmp(mail_rcv.to, "STOP") == 0) && i < 10){
-      if (recv(server_in_socket, &mail_rcv, sizeof(mail_rcv), 0) > 0){
+
+    //TODO: UDP
+    while(strcmp(mail_rcv.to, "STOP") != 0){
+      if (recv(socket, &mail_rcv, sizeof(mail_rcv), 0) > 0){
         printf("%s\n", mail_rcv.topic);
       }
       else{
         printf("Received nothing\n");
-        i = 10;
+        break;
       }
-      i++;
     }
   }
 
