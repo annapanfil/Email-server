@@ -16,7 +16,6 @@
 #include "config.h"
 #include "server_base.c"
 #include "user.h"
-#include "server_incoming_inner.c"
 #include "server_incoming_world.c"
 #include "server_incoming_mail.c"
 
@@ -24,22 +23,19 @@ pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
 
 
 int main(){
-  int world_socket = create_server_socket(SERVER_IN_ADDR, SERVER_IN_PORT_WORLD);
-  int mail_socket = create_server_socket(SERVER_IN_ADDR, SERVER_IN_PORT_MAIL);
-  int inner_socket = create_server_socket(SERVER_IN_ADDR, SERVER_IN_PORT_INNER);
+  int user_request_socket = create_server_socket(SERVER_IN_ADDR, SERVER_IN_PORT_PULL_MAIL);
+  int incoming_mail_socket = create_server_socket(SERVER_IN_ADDR, SERVER_IN_PORT_MAIL);
 
   pthread_t mail_thread_id;
-  if(pthread_create(&mail_thread_id, NULL, mail_server, &mail_socket) != 0 )
+  if(pthread_create(&mail_thread_id, NULL, mail_server, &incoming_mail_socket) != 0 )
      printf("Failed to create thread mail\n");
 
   pthread_detach(mail_thread_id);
 
-  pthread_t inner_thread_id;
-  if(pthread_create(&inner_thread_id, NULL, inner_server, &inner_socket) != 0 )
-     printf("Failed to create thread inner\n");
+  server_listen(user_request_socket, give_mails);
 
-  pthread_detach(inner_thread_id);
-
-  server_listen(world_socket, give_mails);
+  while(1){
+    
+  };
   return 0;
 }

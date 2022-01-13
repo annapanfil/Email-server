@@ -1,6 +1,7 @@
 #include "user.h"
 #include "mail.h"
 #include "usertables.c"
+#include "server_messages.h"
 
 Feedback new_user(char* username, char* password){
   /*Create new user (if not exists)*/
@@ -53,5 +54,35 @@ Feedback logout_user(char* username){
   printf("\n\e[0;36mⓘ Logout %s\e[m\n", username);
   rm_active_user(username);
   Feedback feedback = {.feedback=0, .message="logged out"};
+  return feedback;
+}
+
+
+Feedback is_logged_email_pull (char* username, struct sockaddr user_address){
+  /*Check if user is logged in and send their data to the other server */
+  Feedback feedback;
+
+  if (find_active_user(username)){
+    //send user address data to the other server
+    int other_server_socket;
+    struct sockaddr_in server_addr;
+
+    Userdata userdata;
+    strcpy(userdata.username, username);
+    userdata.user_addr = user_address;
+
+    create_socket(SERVER_IN_ADDR, SERVER_IN_PORT_PULL_MAIL, &server_addr, &other_server_socket);
+    connect(other_server_socket, (struct sockaddr *) &server_addr, sizeof server_addr);
+
+    send(other_server_socket, &userdata, sizeof(userdata), 0);
+
+    feedback.feedback=0;
+    strcpy(feedback.message, "downloading mails");
+  }
+  else{
+    feedback.feedback=1;
+    strcpy(feedback.message, "user not logged in");
+  }
+
   return feedback;
 }

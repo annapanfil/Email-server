@@ -3,19 +3,25 @@ void* get_interaction(void* arg){
   int new_socket = *((int*)arg);
   User user;
   Feedback feedback;
-  int n = recv(new_socket, &user, sizeof(user), 0);
+  struct sockaddr user_addr;
+  socklen_t addr_len = sizeof(user_addr);
+
+  int n = recvfrom(new_socket, &user, sizeof(user), 0, &user_addr, &addr_len);
   while (n>0){
     switch (user.id){
       case 1: feedback = new_user(user.username, user.password); break;
       case 2: feedback = login_user(user.username, user.password); break;
       case 3: feedback = logout_user(user.username); break;
+      case 4: feedback = is_logged_email_pull(user.username, user_addr); break;
     }
 
-    //send feedback
-    if(send(new_socket, &feedback, sizeof(feedback), 0) < 0)
+    if (feedback.feedback != -1){
+      //send feedback
+      if(send(new_socket, &feedback, sizeof(feedback), 0) < 0)
       printf("Send feedback failed\n");
-    else
+      else
       printf("\e[0;35mFeedback: %d %s\e[m\n", feedback.feedback, feedback.message);
+    }
 
     memset(&(feedback.message), 0, sizeof (feedback.message));
     memset(&(user.username), 0, sizeof (user.username));
