@@ -1,4 +1,4 @@
-/*Odbiera maile od użytkowników, sprawdza ich poprawność i przesyła do serwera incoming*/
+/* Get mail from client, validate and send to incoming server */
 
 void send_to_other_server(Mail mail){
     /*send the mail to incoming server*/
@@ -30,6 +30,8 @@ UserInList* check_sender(char* sender){
 
 void* mail_service(void *arg)
 {
+  /*get mail from client and send it to the other server*/
+
   printf("\n\e[0;36mⓘ Mail service\e[m\n");
   int new_socket = *((int *)arg);
   Mail mail;

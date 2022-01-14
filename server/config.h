@@ -2,7 +2,6 @@
 #define CONFIG_H
 
 /*
-sprawdzenie poprawności hasła po stronie klienta
 hasło nieszyfrowane
 */
 

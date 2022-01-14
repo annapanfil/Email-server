@@ -20,7 +20,7 @@ Feedback login_user(char* username, char* password);
 /*remove user from users list*/
 Feedback logout_user(char* username);
 
-/* */
-Feedback is_logged_email_pull (char* username, struct sockaddr_storage user_address);
+/* Check whether user is on active users list and send info to the other server */
+void is_logged_in(char* username, int other_server_socket);
 
 #endif //USER_H

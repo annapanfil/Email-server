@@ -27,36 +27,28 @@ Mailbox* find_mailbox(char* username, bool can_create){
 
 
 void send_all_messages(char*username, int client_socket){
-  printf("send_all_messages to %s\n", username);
+  /*send all mails from mailbox to the user*/
   Mailbox* mailbox = find_mailbox(username, false);
 
   if (mailbox){
-    printf("found mailbox\n");
     RcvdMail* current = mailbox->mails;
     while (current){
       //send all mails
       if(send(client_socket, &current->mail, sizeof(current->mail), 0) < 0)
         printf("Sending mail failed\n");
-      else{
-        printf("mail sent\n");
-      }
       current = current->next;
       }
-    printf("No more mails\n");
   }
   //send stop mail to mark the end of transmission
   Mail stop = {.to="STOP"};
-  printf("Sending STOP\n");
   if(send(client_socket, &stop, sizeof(stop), 0) < 0){
     printf("Sending stop mail failed\n");
   }
-  else{
-    printf("STOP sent\n");
-  };
 }
 
 
 bool is_logged(char* username){
+  /*ask the other server whether the user is logged in*/
   //create a socket for the other server
   struct sockaddr_in address;
   int other_server_socket;
@@ -66,9 +58,6 @@ bool is_logged(char* username){
   if (connect(other_server_socket, (struct sockaddr* )&address, sizeof address) == -1){
       printf("Cannot connect to the other server\n");
       return 0;
-  }
-  else{
-    printf("Connected to the other server\n");
   }
 
   User user_to_check;
@@ -80,7 +69,6 @@ bool is_logged(char* username){
 
   bool logged_in;
   recv(other_server_socket, &logged_in, sizeof(logged_in), 0);
-  printf("%s %d\n", username, logged_in);
   return logged_in;
 }
 
@@ -95,10 +83,9 @@ void* give_mails(void* arg){
 
   // get client data
   int n = recv(client_socket, &username, sizeof(username), 0);
-  printf("got client data: %s\n", username);
 
   if (is_logged(username) == true){
-    printf("logged in\n");
+    // send feedback for client to prepare for transmission
     Feedback feedback = {.feedback = 0, .message="downloading mails"};
     send(client_socket, &feedback, sizeof(feedback), 0);
 
@@ -108,7 +95,6 @@ void* give_mails(void* arg){
     }
   }
   else{
-    printf("not logged in\n");
     Feedback feedback = {.feedback = 1, .message="user not logged in"};
     send(client_socket, &feedback, sizeof(feedback), 0);
   }

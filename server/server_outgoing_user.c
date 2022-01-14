@@ -12,7 +12,7 @@ void* get_interaction(void* arg){
       case 1: feedback = new_user(user.username, user.password); break;
       case 2: feedback = login_user(user.username, user.password); break;
       case 3: feedback = logout_user(user.username); break;
-      case 5: is_logged(user.username, new_socket);
+      case 5: is_logged_in(user.username, new_socket); // from the other server
     }
 
     if (user.id < 5){
