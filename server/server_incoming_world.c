@@ -98,10 +98,19 @@ void* give_mails(void* arg){
   printf("got client data: %s\n", username);
 
   if (is_logged(username) == true){
+    printf("logged in\n");
+    Feedback feedback = {.feedback = 0, .message="downloading mails"};
+    send(client_socket, &feedback, sizeof(feedback), 0);
+
     while (n>0){
       send_all_messages(username, client_socket);
       n = recv(client_socket, &username, sizeof(username), 0);
     }
+  }
+  else{
+    printf("not logged in\n");
+    Feedback feedback = {.feedback = 1, .message="user not logged in"};
+    send(client_socket, &feedback, sizeof(feedback), 0);
   }
 
   return 0;

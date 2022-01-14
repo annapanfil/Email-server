@@ -75,14 +75,13 @@ int main(){
   if(send(server_in_socket, &message, sizeof(message), 0)>0)
     printf("sent\n");
 
-  // recv(server_out_user_socket, &feedback, sizeof(feedback), 0);
-  // printf("Feedback %d %s\n", feedback.feedback, feedback.message);
+  recv(server_in_socket, &feedback, sizeof(feedback), 0);
+  printf("Feedback %d %s\n", feedback.feedback, feedback.message);
 
-  // if (feedback.feedback == 0){
+  if (feedback.feedback == 0){
     Mail mail_rcv = {.to="a"};
     printf("Reading mails...\n");
 
-    //TODO: UDP
     while(strcmp(mail_rcv.to, "STOP") != 0){
       if (recv(server_in_socket, &mail_rcv, sizeof(mail_rcv), 0) > 0){
         printf("%s\n", mail_rcv.topic);
@@ -92,7 +91,7 @@ int main(){
         break;
       }
     }
-  // }
+  }
 
 
   //logout
