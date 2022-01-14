@@ -69,3 +69,10 @@ void* mail_service(void *arg)
   }
   pthread_exit(NULL);
 }
+
+void* server_mail(void* arg){
+  int socket = *((int*) arg);
+  // wait for emails from clients
+  server_listen(socket, mail_service);
+  return 0;
+}

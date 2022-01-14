@@ -10,6 +10,7 @@
 #include <unistd.h> // for close
 #include <pthread.h>
 #include <errno.h>
+#include <signal.h>
 
 #include "mail.h"
 #include "mailbox.h"
@@ -21,9 +22,14 @@
 #include "server_incoming_mail.c"
 
 pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+bool running = true;
+
+void exit_handler(int sig){
+  running = false;
+}
 
 int main(){
-  // signal(SIGINT, exit_handler);
+  signal(SIGINT, exit_handler);
 
   int user_request_socket = create_server_socket(SERVER_IN_ADDR, SERVER_IN_PORT_PULL_MAIL);
   int incoming_mail_socket = create_server_socket(SERVER_IN_ADDR, SERVER_IN_PORT_MAIL);
@@ -32,9 +38,19 @@ int main(){
   if(pthread_create(&mail_thread_id, NULL, mail_server, &incoming_mail_socket) != 0 )
      printf("Failed to create thread mail\n");
 
-  pthread_detach(mail_thread_id);
 
-  server_listen(user_request_socket, give_mails);
-  
+   pthread_t user_thread_id;
+   if(pthread_create(&user_thread_id, NULL, user_server, &user_request_socket) != 0 )
+      printf("Failed to create thread mail\n");
+    pthread_detach(user_thread_id);
+
+  while(running == true){
+    ;
+  }
+
+  close(user_request_socket);
+  close(incoming_mail_socket);
+  //free_all_mailboxes(); //Trzeba?
+  printf("\n\e[0;36mⓘ Goodbye!\e[m\n");
   return 0;
 }

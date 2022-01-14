@@ -44,11 +44,13 @@ void send_all_messages(char*username, int client_socket){
   if(send(client_socket, &stop, sizeof(stop), 0) < 0){
     printf("Sending stop mail failed\n");
   }
+
+  close(client_socket);
 }
 
 
 bool is_logged(char* username){
-  /*ask the other server whether the user is logged in*/
+  /* Ask the other server whether the user is logged in */
   //create a socket for the other server
   struct sockaddr_in address;
   int other_server_socket;
@@ -69,6 +71,7 @@ bool is_logged(char* username){
 
   bool logged_in;
   recv(other_server_socket, &logged_in, sizeof(logged_in), 0);
+  close (other_server_socket);
   return logged_in;
 }
 
@@ -99,5 +102,13 @@ void* give_mails(void* arg){
     send(client_socket, &feedback, sizeof(feedback), 0);
   }
 
+  close(client_socket);
+  return 0;
+}
+
+
+void* user_server(void* arg){
+  int socket = *((int*) arg);
+  server_listen(socket, give_mails);
   return 0;
 }

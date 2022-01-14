@@ -29,6 +29,8 @@ void* get_interaction(void* arg){
 
     n = recv(new_socket, &user, sizeof(user), 0);
   }
+
+
   return 0;
 }
 
