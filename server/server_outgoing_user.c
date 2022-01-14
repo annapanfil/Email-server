@@ -1,14 +1,7 @@
 void* get_interaction(void* arg){
   /*user creation, login and logout*/
-  typedef struct Args{
-    int socket;
-    struct sockaddr_storage address;
-  }Args;
 
-  int new_socket = ((Args*)arg)->socket;
-  struct sockaddr_storage user_addr = ((Args*) arg)-> address;
-
-  // int new_socket = *((int*)arg);
+  int new_socket = *((int*)arg);
   User user;
   Feedback feedback;
 
@@ -19,10 +12,10 @@ void* get_interaction(void* arg){
       case 1: feedback = new_user(user.username, user.password); break;
       case 2: feedback = login_user(user.username, user.password); break;
       case 3: feedback = logout_user(user.username); break;
-      case 4: feedback = is_logged_email_pull(user.username, user_addr); break;
+      case 5: is_logged(user.username, new_socket);
     }
 
-    if (feedback.feedback != -1){
+    if (user.id < 5){
       //send feedback
       if(send(new_socket, &feedback, sizeof(feedback), 0) < 0)
       printf("Send feedback failed\n");
@@ -43,6 +36,6 @@ void* get_interaction(void* arg){
 void* server_users(void* arg){
   //wait for requests
   int server_socket = *((int*)arg);
-  server_listen_get_addr(server_socket, get_interaction);
+  server_listen(server_socket, get_interaction);
   return 0;
 }

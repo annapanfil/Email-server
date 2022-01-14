@@ -27,7 +27,7 @@ Mailbox* find_mailbox(char* username, bool can_create){
 
 
 void send_all_messages(char*username, int client_socket){
-  printf("send_all_messages\n");
+  printf("send_all_messages to %s\n", username);
   Mailbox* mailbox = find_mailbox(username, false);
 
   if (mailbox){
@@ -56,33 +56,53 @@ void send_all_messages(char*username, int client_socket){
 }
 
 
-void* give_mails(void* arg){
-  /*get user's address and send all mails*/
-  printf("\n\e[0;36mⓘ Send all messages\e[m\n");
+bool is_logged(char* username){
+  //create a socket for the other server
+  struct sockaddr_in address;
+  int other_server_socket;
 
-  int other_server_socket = *((int*)arg);
-  Userdata userdata;
+  create_socket(SERVER_OUT_ADDR, SERVER_OUT_PORT_USER, &address, &other_server_socket);
 
-  // get client data
-  int n = recv(other_server_socket, &userdata, sizeof(userdata), 0);
-  printf("%d %s\n", n, userdata.username);
-
-  //TODO: change to udp
-  //create a socket for the client
-  int client_socket = socket(PF_INET, SOCK_STREAM, 0);
-
-  if (connect(client_socket, (struct sockaddr * )&userdata.user_addr, sizeof userdata.user_addr) == -1){
-      printf("Cannot connect to client\n");
+  if (connect(other_server_socket, (struct sockaddr* )&address, sizeof address) == -1){
+      printf("Cannot connect to the other server\n");
       return 0;
   }
   else{
-    printf("Connected to client\n");
+    printf("Connected to the other server\n");
   }
 
-  while (n>0){
-    send_all_messages(userdata.username, client_socket);
-    n = recv(other_server_socket, &userdata, sizeof(userdata), 0);
+  User user_to_check;
+  user_to_check.id = 5;
+  strcpy(user_to_check.username, username);
+
+  if(send(other_server_socket, &user_to_check, sizeof(user_to_check), 0) < 0)
+    printf("Sending failed\n");
+
+  bool logged_in;
+  recv(other_server_socket, &logged_in, sizeof(logged_in), 0);
+  printf("%s %d\n", username, logged_in);
+  return logged_in;
+}
+
+
+void* give_mails(void* arg){
+  /*check if user logged in send all mails*/
+  printf("\n\e[0;36mⓘ Send all messages\e[m\n");
+
+  int client_socket = *((int*)arg);
+
+  char username[USERNAME_LEN];
+
+  // get client data
+  int n = recv(client_socket, &username, sizeof(username), 0);
+  printf("got client data: %s\n", username);
+
+  if (is_logged(username) == true){
+    while (n>0){
+      send_all_messages(username, client_socket);
+      n = recv(client_socket, &username, sizeof(username), 0);
+    }
   }
-  printf("n= %d quitting... \n", n);
+
   return 0;
 }

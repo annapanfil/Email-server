@@ -64,49 +64,7 @@ int server_listen(int server_socket, void* (*client_f)(void*)){
       addr_size = sizeof serverStorage;
       new_socket = accept(server_socket, (struct sockaddr *) &serverStorage, &addr_size);
 
-      struct sockaddr_in* sender_addr = (struct sockaddr_in*) &serverStorage;
-      printf("%d", sender_addr->sin_addr.s_addr);
-
       if(pthread_create(&thread_id, NULL, client_f, &new_socket) != 0 )
-         printf("Failed to create thread\n");
-
-      pthread_detach(thread_id);
-  }
-  return 0;
-}
-
-
-int server_listen_get_addr(int server_socket, void* (*client_f)(void*)){
-  int new_socket;
-  struct sockaddr_storage client_address;
-  socklen_t addr_size;
-
-  //Listen on the socket
-  if(listen(server_socket, 50) == 0)
-    printf("Listening...\n");
-  else
-    printf("Error while listening attempt\n");
-
-  pthread_t thread_id;
-
-  while(1)
-  {
-      //Accept call creates a new socket for the incoming connection
-      addr_size = sizeof client_address;
-
-      new_socket = accept(server_socket, (struct sockaddr *) &client_address, &addr_size);
-
-      struct sockaddr_in* sender_addr = (struct sockaddr_in*) &client_address;
-      printf("%d", sender_addr->sin_addr.s_addr);
-
-      typedef struct Args{
-        int socket;
-        struct sockaddr_storage address;
-      }Args;
-
-      Args args = {.socket=new_socket, .address = client_address};
-
-      if(pthread_create(&thread_id, NULL, client_f, &args) != 0 )
          printf("Failed to create thread\n");
 
       pthread_detach(thread_id);
