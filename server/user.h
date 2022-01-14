@@ -1,7 +1,6 @@
 #ifndef USER_H
 #define USER_H
 
-#include "mail.h"
 #define USERNAME_LEN 256
 #define PASSWORD_LEN 30
 
@@ -20,5 +19,8 @@ Feedback login_user(char* username, char* password);
 
 /*remove user from users list*/
 Feedback logout_user(char* username);
+
+/* Check whether user is on active users list and send info to the other server */
+void is_logged_in(char* username, int other_server_socket);
 
 #endif //USER_H

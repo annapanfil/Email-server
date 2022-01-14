@@ -69,4 +69,5 @@ int server_listen(int server_socket, void* (*client_f)(void*)){
 
       pthread_detach(thread_id);
   }
+  return 0;
 }

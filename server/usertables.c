@@ -2,6 +2,7 @@
 #ifndef USERTABLES_C
 #define USERTABLES_C
 #include "user.h"
+#include "bool.h"
 
 #define MAX_USERS 100
 
