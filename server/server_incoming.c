@@ -34,7 +34,5 @@ int main(){
 
   pthread_detach(mail_thread_id);
 
-  server_listen(user_request_socket, give_mails);
-  
-  return 0;
+  server_listen(user_request_socket, give_mails);  return 0;
 }

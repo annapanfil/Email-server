@@ -4,7 +4,6 @@
 Mailbox mailboxes[MAX_CLIENTS];
 int mailboxes_num;
 
-
 Mailbox* find_mailbox(char* username, bool can_create){
   //find existing mailbox...
   for (int i=0; i<=mailboxes_num; i++){
@@ -80,7 +79,6 @@ void* give_mails(void* arg){
   int client_socket = *((int*)arg);
 
   char username[USERNAME_LEN];
-
   // get client data
   int n = recv(client_socket, &username, sizeof(username), 0);
 
@@ -98,6 +96,5 @@ void* give_mails(void* arg){
     Feedback feedback = {.feedback = 1, .message="user not logged in"};
     send(client_socket, &feedback, sizeof(feedback), 0);
   }
-
   return 0;
 }

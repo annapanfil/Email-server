@@ -13,7 +13,6 @@
 #include "../server_base.c"
 #include "../user.h"
 
-
 int main(){
 
   Mail mail = {.from = "anna@me.me", .to = "dan@oth.oth", .topic = "Mytopic", .text = "My text\nwith enter"};
@@ -92,39 +91,6 @@ int main(){
   send(server_out_mail_socket, &mail, sizeof(mail), 0);
   recv(server_out_mail_socket, &feedback, sizeof(feedback), 0);
   printf("Feedback: %d %s\n", feedback.feedback, feedback.message);
-
-
-  //pull mails
-  // printf("\n\e[0;36mⓘ Pull mails\e[m\n");
-  // user.id = 4;
-  // strcpy(user.username, "dan");
-  //
-  // if(send(server_out_user_socket, &user, sizeof(user), 0)>0)
-  //   printf("sent\n");
-  //
-  // recv(server_out_user_socket, &feedback, sizeof(feedback), 0);
-  // printf("Feedback %d %s\n", feedback.feedback, feedback.message);
-  // if (feedback.feedback == 0){
-  //   Mail mail_rcv = {.to="a"};
-  //   printf("Reading mails...\n");
-  //
-  //   //TODO: UDP
-  //   while(strcmp(mail_rcv.to, "STOP") != 0){
-  //     if (recv(socket, &mail_rcv, sizeof(mail_rcv), 0) > 0){
-  //       printf("%s\n", mail_rcv.topic);
-  //     }
-  //     else{
-  //       printf("Received nothing\n");
-  //       break;
-  //     }
-  //   }
-  // }
-
-  char message[] = "dan";
-
-  if(send(server_in_socket, &message, sizeof(message), 0)>0)
-    printf("sent\n");
-
 
 
   //logout

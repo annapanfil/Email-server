@@ -31,7 +31,7 @@ UserInList* check_sender(char* sender){
 void* mail_service(void *arg)
 {
   /*get mail from client and send it to the other server*/
-
+  
   printf("\n\e[0;36mⓘ Mail service\e[m\n");
   int new_socket = *((int *)arg);
   Mail mail;
