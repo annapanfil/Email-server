@@ -135,7 +135,7 @@ void login_for_user(int sockfd, int sckfd,int scfd)
   	if (feedback.feedback==0){
   	printf("Thank you for login\n");
   	for(;;){
-  	printf("Choose what you want to get\n");
+  	printf("Choose what you want to get\n Send email-mail\n Check your inbox-read\n Logout-logout\n ");
   	y = 0;
         while ((mode[y++] = getchar()) != '\n');
   	if ((strncmp(mode, "mail", 4)) == 0) {
@@ -185,7 +185,7 @@ int main(){
   for(;;){
   	char mode[MAX];
   	int n;
-  	printf("Select an option \n");
+  	printf("Select an option \n Register - register\n Login - login\n");
   	n = 0;
         while ((mode[n++] = getchar()) != '\n');
         if ((strncmp(mode, "register", 8)) == 0) {
