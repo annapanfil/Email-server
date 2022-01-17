@@ -7,6 +7,7 @@
 #include <fcntl.h> // for open
 #include <unistd.h> // for close
 #include <pthread.h>
+
 #define MAX 80
 #include "../server/config.h"
 #include "../server/mail.h"
@@ -73,8 +74,9 @@ void send_message_user(int sockfd,User user)
 void get_message_user(int sockfd,User user)
 {
 	Feedback feedback;
-	char message=user.username;
-	if(send(sockfd, &message, sizeof(message), 0)>0)
+	char message[MAX];
+	strcpy(user.username, message);
+	send(sockfd, &message, sizeof(message), 0);
     	printf("sent\n");
 	recv(sockfd, &feedback, sizeof(feedback), 0);
   	printf("Feedback %d %s\n", feedback.feedback, feedback.message);
@@ -168,7 +170,8 @@ int main(){
 
 
   struct sockaddr_in server_addr;
-  int server_out_mail_socket, server_out_user_socket, server_in_socket;
+  int server_out_mail_socket, server_out_user_socket,
+  server_in_socket;
 
   create_socket(SERVER_OUT_ADDR, SERVER_OUT_PORT_MAIL, &server_addr, &server_out_mail_socket);
 
@@ -181,6 +184,7 @@ int main(){
   create_socket(SERVER_IN_ADDR, SERVER_IN_PORT_PULL_MAIL, &server_addr, &server_in_socket);
 
   connect(server_in_socket, (struct sockaddr *) &server_addr, sizeof server_addr);
+
 
   for(;;){
   	char mode[MAX];
