@@ -40,7 +40,7 @@ void send_all_messages(char*username, int client_socket){
       if(send(client_socket, &current->mail, sizeof(current->mail), 0) < 0)
         printf("Sending mail failed\n");
       else
-        printf("Sent mail: %s\n", &current->mail.topic);
+        printf("Sent mail: %s\n", current->mail.topic);
       current = current->next;
       }
   }
