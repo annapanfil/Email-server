@@ -27,7 +27,7 @@ Feedback login_user(char* username, char* password){
 
   printf("\n\e[0;36mⓘ Login %s\e[m\n", username);
   Feedback feedback;
-  
+
   //look for the user
   User* user = find_user(username);
   if (user){
@@ -53,7 +53,7 @@ Feedback login_user(char* username, char* password){
 
 Feedback logout_user(char* username){
   /*Remove user from active users*/
-  
+
   printf("\n\e[0;36mⓘ Logout %s\e[m\n", username);
   rm_active_user(username);
   Feedback feedback = {.feedback=0, .message="logged out"};

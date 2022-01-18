@@ -1,3 +1,8 @@
+void exit_handler_mail(int sig){
+  printf("You wanted me to terminate, my master. ~mail\n");
+  pthread_exit(0);
+}
+
 Mailbox* add_to_mailbox(Mail mail, char* username){
   /*Add to user mailbox*/
   printf("\n\e[0;36mⓘ Add to %s's mailbox %s\e[m\n", username, mail.topic);
@@ -33,6 +38,7 @@ void* get_mail(void *arg)
 
 void* mail_server(void* arg){
   /*wait for mails from outgoing server*/
+  signal(18, exit_handler_mail); //SIGCHLD
   int socket = *((int *)arg);
   server_listen(socket, get_mail);
   return 0;

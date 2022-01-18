@@ -1,3 +1,8 @@
+void user_exit_handler(int sig){
+  printf("Kill user\n");
+  pthread_exit(0);
+}
+
 void* get_interaction(void* arg){
   /*user creation, login and logout*/
 
@@ -34,6 +39,7 @@ void* get_interaction(void* arg){
 
 
 void* server_users(void* arg){
+  signal(17, user_exit_handler);
   //wait for requests
   int server_socket = *((int*)arg);
   server_listen(server_socket, get_interaction);

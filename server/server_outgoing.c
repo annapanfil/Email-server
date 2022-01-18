@@ -10,6 +10,7 @@
 #include <unistd.h> // for close
 #include <pthread.h>
 #include <errno.h>
+#include <signal.h>
 
 #include "mail.h"
 #include "config.h"
@@ -20,22 +21,46 @@
 #include "server_outgoing_mail.c"
 
 // ---------------------------------------------------------------------------
+bool running = true;
+
+void exit_handler(int sig){
+  running = false;
+}
 
 int main(){
+  signal(SIGINT, exit_handler);
+
   int user_interaction_socket = create_server_socket(SERVER_OUT_ADDR, SERVER_OUT_PORT_USER);
   int mail_socket = create_server_socket(SERVER_OUT_ADDR, SERVER_OUT_PORT_MAIL);
   init_mutexes();
 
-  /* create thread to control user interaction and to receive mails*/
-  pthread_t thread_id;
-  if(pthread_create(&thread_id, NULL, server_users, &user_interaction_socket) != 0 )
+  /* create thread to control user interaction*/
+  pthread_t user_thread_id;
+  if(pthread_create(&user_thread_id, NULL, server_users, &user_interaction_socket) != 0 )
      printf("Failed to create thread server_users\n");
 
-  pthread_detach(thread_id);
+  /* create thread to receive mails*/
+  pthread_t mail_thread_id;
+  if(pthread_create(&mail_thread_id, NULL, server_mail, &mail_socket) != 0 )
+     printf("Failed to create thread server_mail\n");
 
-  // wait for emails from clients
-  server_listen(mail_socket, mail_service);
+  pthread_detach(mail_thread_id);
 
-  //TODO: exit nicely (close sockets, remove users from memory, destroy mutexes)
+  while (running == true){
+    ;
+  }
+
+  pthread_kill(mail_thread_id, 18);
+  pthread_kill(user_thread_id, 17);
+
+  pthread_join(user_thread_id, NULL);
+  pthread_join(mail_thread_id, NULL);
+  printf("Threads joined\n");
+
+  close(user_interaction_socket);
+  close(mail_socket);
+  printf("Sockets closed\n");
+
+  printf("\n\e[0;36mⓘ Goodbye!\e[m\n");
   return 0;
 }
