@@ -5,7 +5,6 @@ Mailbox mailboxes[MAX_CLIENTS];
 int mailboxes_num;
 
 void exit_handler_user(int sig){
-  printf("You wanted me to terminate, my master. ~user\n");
   pthread_exit(0);
 }
 
@@ -23,8 +22,8 @@ Mailbox* find_mailbox(char* username, bool can_create){
     strcpy(mailbox->username, username);
     mailbox->mails = NULL;
     mailboxes[mailboxes_num] = *mailbox;
-    mailboxes_num += 1; //TODO: mutex?
-    return mailboxes + mailboxes_num;
+    mailboxes_num += 1;
+    return mailboxes + mailboxes_num - 1;
   }
   return NULL;
 }
@@ -40,6 +39,8 @@ void send_all_messages(char*username, int client_socket){
       //send all mails
       if(send(client_socket, &current->mail, sizeof(current->mail), 0) < 0)
         printf("Sending mail failed\n");
+      else
+        printf("Sent mail: %s\n", &current->mail.topic);
       current = current->next;
       }
   }
@@ -95,6 +96,7 @@ void* give_mails(void* arg){
     // send feedback for client to prepare for transmission
     Feedback feedback = {.feedback = 0, .message="downloading mails"};
     send(client_socket, &feedback, sizeof(feedback), 0);
+    printf("%s logged in\n", username);
 
     while (n>0){
       send_all_messages(username, client_socket);
@@ -102,6 +104,7 @@ void* give_mails(void* arg){
     }
   }
   else{
+    printf("%s not logged in\n", username);
     Feedback feedback = {.feedback = 1, .message="user not logged in"};
     send(client_socket, &feedback, sizeof(feedback), 0);
   }

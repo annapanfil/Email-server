@@ -1,5 +1,4 @@
 void exit_handler_mail(int sig){
-  printf("You wanted me to terminate, my master. ~mail\n");
   pthread_exit(0);
 }
 
