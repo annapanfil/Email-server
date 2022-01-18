@@ -36,11 +36,9 @@ int main(){
   init_mutexes();
 
   /* create thread to control user interaction*/
-  pthread_t thread_id;
-  if(pthread_create(&thread_id, NULL, server_users, &user_interaction_socket) != 0 )
+  pthread_t user_thread_id;
+  if(pthread_create(&user_thread_id, NULL, server_users, &user_interaction_socket) != 0 )
      printf("Failed to create thread server_users\n");
-
-  pthread_detach(thread_id);
 
   /* create thread to receive mails*/
   pthread_t mail_thread_id;
@@ -53,8 +51,17 @@ int main(){
     ;
   }
 
+  pthread_kill(mail_thread_id, 18);
+  pthread_kill(user_thread_id, 17);
+
+  pthread_join(user_thread_id, NULL);
+  pthread_join(mail_thread_id, NULL);
+  printf("Threads joined\n");
+
   close(user_interaction_socket);
   close(mail_socket);
+  printf("Sockets closed\n");
+
   printf("\n\e[0;36mⓘ Goodbye!\e[m\n");
   return 0;
 }

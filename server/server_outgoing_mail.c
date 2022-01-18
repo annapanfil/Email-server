@@ -1,5 +1,10 @@
 /* Get mail from client, validate and send to incoming server */
 
+void mail_exit_handler(int sig){
+  printf("Kill mail\n");
+  pthread_exit(0);
+}
+
 void send_to_other_server(Mail mail){
     /*send the mail to incoming server*/
     int other_server_socket;
@@ -71,6 +76,7 @@ void* mail_service(void *arg)
 }
 
 void* server_mail(void* arg){
+  signal(18, mail_exit_handler);
   int socket = *((int*) arg);
   // wait for emails from clients
   server_listen(socket, mail_service);
