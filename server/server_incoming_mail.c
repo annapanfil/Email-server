@@ -3,7 +3,6 @@ void exit_handler_mail(int sig){
   pthread_exit(0);
 }
 
-
 Mailbox* add_to_mailbox(Mail mail, char* username){
   /*Add to user mailbox*/
   printf("\n\e[0;36mⓘ Add to %s's mailbox %s\e[m\n", username, mail.topic);

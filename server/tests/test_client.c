@@ -13,7 +13,6 @@
 #include "../server_base.c"
 #include "../user.h"
 
-
 int main(){
 
   Mail mail = {.from = "anna@me.me", .to = "dan@oth.oth", .topic = "Mytopic", .text = "My text\nwith enter"};
@@ -124,8 +123,6 @@ int main(){
 
   if(send(server_in_socket, &message, sizeof(message), 0)>0)
     printf("sent\n");
-
-
 
   //logout
   user.id = 3;

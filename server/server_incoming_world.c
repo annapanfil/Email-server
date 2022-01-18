@@ -48,13 +48,13 @@ void send_all_messages(char*username, int client_socket){
   if(send(client_socket, &stop, sizeof(stop), 0) < 0){
     printf("Sending stop mail failed\n");
   }
-
   close(client_socket);
 }
 
 
 bool is_logged(char* username){
   /* Ask the other server whether the user is logged in */
+
   //create a socket for the other server
   struct sockaddr_in address;
   int other_server_socket;
@@ -105,7 +105,6 @@ void* give_mails(void* arg){
     Feedback feedback = {.feedback = 1, .message="user not logged in"};
     send(client_socket, &feedback, sizeof(feedback), 0);
   }
-
   close(client_socket);
   return 0;
 }

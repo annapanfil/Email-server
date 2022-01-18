@@ -22,6 +22,7 @@
 #include "server_incoming_mail.c"
 
 pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+
 bool running = true;
 
 void exit_handler(int sig){

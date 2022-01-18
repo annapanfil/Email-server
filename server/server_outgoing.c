@@ -21,7 +21,6 @@
 #include "server_outgoing_mail.c"
 
 // ---------------------------------------------------------------------------
-
 bool running = true;
 
 void exit_handler(int sig){
