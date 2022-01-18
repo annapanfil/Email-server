@@ -8,7 +8,7 @@
 #include <unistd.h> // for close
 #include <pthread.h>
 
-#define MAX 80
+#define MAX 256
 #include "../server/config.h"
 #include "../server/mail.h"
 #include "../server/server_base.c"
@@ -21,21 +21,19 @@ void create_user(int sockfd)
     Feedback feedback;
     char buff_username[MAX];
     char buff_password[MAX];
-    int n;
-    int z;
         bzero(buff_username, sizeof(buff_username));
         bzero(buff_password, sizeof(buff_password));
         printf("Enter the username : ");
-        n = 0;
-        while ((buff_username[n++] = getchar()) != '\n');
+        fgets(buff_username, MAX, stdin);
+        buff_username[strcspn(buff_username,"\n")] ='\0';
         strcpy(user.username, buff_username);
         printf("Enter the password : ");
-        z = 0;
-        while ((buff_password[z++] = getchar()) != '\n');
+        fgets(buff_password, MAX, stdin);
+        buff_password[strcspn(buff_password,"\n")] ='\0';
         strcpy(user.password, buff_password);  
         send(sockfd, &user, sizeof(user), 0);
-  	recv(sockfd, &feedback, sizeof(feedback), 0);
-  	printf("Feedback: %d %s\n", feedback.feedback, feedback.message);
+          recv(sockfd, &feedback, sizeof(feedback), 0);
+          printf("Feedback: %d %s\n", feedback.feedback, feedback.message);
 }
 void send_message_user(int sockfd,User user)
 {
@@ -45,25 +43,24 @@ void send_message_user(int sockfd,User user)
     char buff_to[MAX];
     char buff_topic[MAX];
     char buff_text[MAX];
-    int n;
-    int z;
-    int y;
+    bzero(buff_to, sizeof(buff_to));
+    bzero(buff_topic, sizeof(buff_topic));
+    bzero(buff_text, sizeof(buff_text));
     strcpy(mail.from,user.username);
         bzero(buff_to, sizeof(buff_to));
         bzero(buff_topic, sizeof(buff_topic));
         bzero(buff_text, sizeof(buff_text));
-        
         printf("Enter the receiver of mail : ");
-        n = 0;
-        while ((buff_to[n++] = getchar()) != '\n');
+        fgets(buff_to, MAX, stdin);
+        buff_to[strcspn(buff_to,"\n")] ='\0';
         strcpy(mail.to, buff_to);
         printf("Enter the topic : ");
-        z = 0;
-        while ((buff_topic[z++] = getchar()) != '\n');
+        fgets(buff_topic, MAX, stdin);
+        buff_topic[strcspn(buff_topic,"\n")] ='\0';
         strcpy(mail.topic, buff_topic);
         printf("Enter the text : ");
-        y = 0;
-        while ((buff_text[y++] = getchar()) != '\n');
+        fgets(buff_text, MAX, stdin);
+        buff_text[strcspn(buff_text,"\n")] ='\0';
         strcpy(mail.text, buff_text);    
         send(sockfd, &mail, sizeof(mail), 0);
         recv(sockfd, &feedback, sizeof(feedback), 0);
@@ -73,20 +70,19 @@ void send_message_user(int sockfd,User user)
 
 void get_message_user(int sockfd,User user)
 {
-	Feedback feedback;
-	char message[MAX];
-	strcpy(user.username, message);
-	send(sockfd, &message, sizeof(message), 0);
-    	printf("sent\n");
-	recv(sockfd, &feedback, sizeof(feedback), 0);
-  	printf("Feedback %d %s\n", feedback.feedback, feedback.message);
-  	if (feedback.feedback == 0){
-    		Mail mail_rcv = {.to="a"};
-    		printf("Reading mails...\n");
+        Feedback feedback;
+        send(sockfd, &user.username, sizeof(user.username), 0);
+            printf("sent\n");
+        recv(sockfd, &feedback, sizeof(feedback), 0);
+          printf("Feedback %d %s\n", feedback.feedback, feedback.message);
+          if (feedback.feedback == 0){
+                    Mail mail_rcv = {.to=user.username};
+                    printf("Reading mails...\n");
 
-    		while(strcmp(mail_rcv.to, "STOP") != 0){
-      			if (recv(sockfd, &mail_rcv, sizeof(mail_rcv), 0) > 0){
-        			printf("%s\n", mail_rcv.topic);
+                    while(strcmp(mail_rcv.to, "STOP") != 0){
+                              if (recv(sockfd, &mail_rcv, sizeof(mail_rcv), 0) > 0){
+                                printf("Topic: %s\n", mail_rcv.topic);
+                                printf("Text: %s\n",mail_rcv.topic);
       }
       else{
         printf("Received nothing\n");
@@ -94,7 +90,7 @@ void get_message_user(int sockfd,User user)
     }
     }
     else{
-    	printf("Nothing\n");
+            printf("Nothing\n");
     }
         
 }
@@ -118,29 +114,26 @@ void login_for_user(int sockfd, int sckfd,int scfd)
     char buff_username[MAX];
     char buff_password[MAX];
     char mode[MAX];
-    int n;
-    int z;
-    int y;
         bzero(buff_username, sizeof(buff_username));
         bzero(buff_password, sizeof(buff_password));
         printf("Enter the username : ");
-        n = 0;
-        while ((buff_username[n++] = getchar()) != '\n');
+        fgets(buff_username, MAX, stdin);
+        buff_username[strcspn(buff_username,"\n")] ='\0';
         strcpy(user.username, buff_username);
         printf("Enter the password : ");
-        z = 0;
-        while ((buff_password[z++] = getchar()) != '\n');
+        fgets(buff_password, MAX, stdin);
+        buff_password[strcspn(buff_password,"\n")] ='\0';
         strcpy(user.password, buff_password);  
         send(sockfd, &user, sizeof(user), 0);
-  	recv(sockfd, &feedback, sizeof(feedback), 0);
-  	printf("Feedback: %d %s\n", feedback.feedback, feedback.message);
-  	if (feedback.feedback==0){
-  	printf("Thank you for login\n");
-  	for(;;){
-  	printf("Choose what you want to get\n Send email-mail\n Check your inbox-read\n Logout-logout\n ");
-  	y = 0;
-        while ((mode[y++] = getchar()) != '\n');
-  	if ((strncmp(mode, "mail", 4)) == 0) {
+          recv(sockfd, &feedback, sizeof(feedback), 0);
+          printf("Feedback: %d %s\n", feedback.feedback, feedback.message);
+          if (feedback.feedback==0){
+          printf("Thank you for login\n");
+          for(;;){
+          printf("Choose what you want to get\n Send email-mail\n Check your inbox-read\n Logout-logout\n ");
+        fgets(mode, MAX, stdin);
+        mode[strcspn(mode,"\n")] ='\0';
+          if ((strncmp(mode, "mail", 4)) == 0) {
             printf("Give data for mail \n");
             send_message_user(scfd,user);
         }
@@ -153,13 +146,13 @@ void login_for_user(int sockfd, int sckfd,int scfd)
             logout_for_user(sockfd,user);
             break;
         }
-  	
-  	}
-  	}
-  	else{
-  	printf("Try again or choose another option");
-  	}
-  	}
+          
+          }
+          }
+          else{
+          printf("Try again or choose another option");
+          }
+          }
 
 
 
@@ -187,11 +180,10 @@ int main(){
 
 
   for(;;){
-  	char mode[MAX];
-  	int n;
-  	printf("Select an option \n Register - register\n Login - login\n");
-  	n = 0;
-        while ((mode[n++] = getchar()) != '\n');
+          char mode[MAX];
+          printf("Select an option \n Register - register\n Login - login\n");
+        fgets(mode, MAX, stdin);
+        mode[strcspn (mode,"\n")] ='\0';
         if ((strncmp(mode, "register", 8)) == 0) {
             printf("Registration started \n");
             create_user(server_out_user_socket);  
@@ -200,8 +192,8 @@ int main(){
             printf("Give data for login \n");
             login_for_user(server_out_user_socket,server_in_socket,server_out_mail_socket);
         }
-  	
-  	
+          
+          
   
   }
   
@@ -210,3 +202,4 @@ int main(){
   close(server_in_socket);
   return 0;
 }
+
