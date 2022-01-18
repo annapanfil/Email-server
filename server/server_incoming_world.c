@@ -4,6 +4,10 @@
 Mailbox mailboxes[MAX_CLIENTS];
 int mailboxes_num;
 
+void exit_handler_user(int sig){
+  printf("You wanted me to terminate, my master. ~user\n");
+  pthread_exit(0);
+}
 
 Mailbox* find_mailbox(char* username, bool can_create){
   //find existing mailbox...
@@ -108,6 +112,7 @@ void* give_mails(void* arg){
 
 
 void* user_server(void* arg){
+  signal(17, exit_handler_user); //SIGCHLD
   int socket = *((int*) arg);
   server_listen(socket, give_mails);
   return 0;

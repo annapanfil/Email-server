@@ -1,6 +1,8 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+//ps -eLf | grep server_ | head -n 1 | awk '{print $2}' | xargs kill //zabij serwery
+
 /*
 hasło nieszyfrowane
 */
