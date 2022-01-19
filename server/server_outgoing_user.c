@@ -1,5 +1,4 @@
 void user_exit_handler(int sig){
-  printf("Kill user\n");
   pthread_exit(0);
 }
 

@@ -1,7 +1,6 @@
 /* Get mail from client, validate and send to incoming server */
 
 void mail_exit_handler(int sig){
-  printf("Kill mail\n");
   pthread_exit(0);
 }
 

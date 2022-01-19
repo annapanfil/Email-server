@@ -53,15 +53,12 @@ int main(){
 
   pthread_kill(user_thread_id, 17); //SIGCHLD
   pthread_kill(mail_thread_id, 18); //SIGCHLD
-  printf("Signal sent\n");
 
   pthread_join(user_thread_id, NULL);
   pthread_join(mail_thread_id, NULL);
-  printf("Threads joined\n");
 
   close(user_request_socket);
   close(incoming_mail_socket);
-  printf("Sockets closed\n");
 
   printf("\n\e[0;36mⓘ Goodbye!\e[m\n");
   return 0;

@@ -55,11 +55,9 @@ int main(){
 
   pthread_join(user_thread_id, NULL);
   pthread_join(mail_thread_id, NULL);
-  printf("Threads joined\n");
 
   close(user_interaction_socket);
   close(mail_socket);
-  printf("Sockets closed\n");
 
   printf("\n\e[0;36mⓘ Goodbye!\e[m\n");
   return 0;
