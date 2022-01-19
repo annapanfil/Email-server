@@ -76,13 +76,14 @@ void get_message_user(int sockfd,User user)
         recv(sockfd, &feedback, sizeof(feedback), 0);
           printf("Feedback %d %s\n", feedback.feedback, feedback.message);
           if (feedback.feedback == 0){
-                    Mail mail_rcv = {.to=user.username};
+                    Mail mail_rcv;
+ 		    strcpy(mail_rcv.to,user.username);
                     printf("Reading mails...\n");
 
                     while(strcmp(mail_rcv.to, "STOP") != 0){
-                              if (recv(sockfd, &mail_rcv, sizeof(mail_rcv), 0) > 0){
+                              if (recv(sockfd, &mail_rcv, sizeof(mail_rcv), 0) > 0 && (strcmp(mail_rcv.to, "STOP") != 0)){
                                 printf("Topic: %s\n", mail_rcv.topic);
-                                printf("Text: %s\n",mail_rcv.topic);
+                                printf("Text: %s\n",mail_rcv.text);
       }
       else{
         printf("Received nothing\n");
