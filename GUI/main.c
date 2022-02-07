@@ -6,23 +6,20 @@
 #define WINDOW_WIDTH 300
 
 
+
+
 typedef struct {
 	GtkWidget *account_edit, *passwd_edit;
 }login_window;
 static GtkWidget *window;
-void init_network();
-void destroy_network();
 struct sockaddr_in server_addr;
  int server_out_mail_socket, server_out_user_socket,server_in_socket;
+int z=0;
+User user = {.id = 2, .username="", .password=""};
+Feedback feedback;
 
 
-int sfd = -1;
 
-
-void destroy_network()
-{
-	close(sfd);
-}
 
 static void login_verify(GtkWidget *widget, gpointer data)
 {
@@ -40,8 +37,7 @@ static void login_verify(GtkWidget *widget, gpointer data)
 		gtk_widget_destroy(dialog);
 		return;
 	}
-	User user = {.id = 2, .username="", .password=""};
-    	Feedback feedback;
+
 	strcpy(user.username, account);
 	strcpy(user.password, passwd);
 	send(server_out_user_socket, &user, sizeof(user), 0);
@@ -71,10 +67,12 @@ static void login_verify(GtkWidget *widget, gpointer data)
 				GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_WARNING,
 				GTK_BUTTONS_CLOSE, "Login success!");
 		gtk_dialog_run(GTK_DIALOG(dialog));
+
 		gtk_widget_destroy(dialog);
+		z=1;
+			user_account(user);
+		
 	}
-	gtk_widget_hide_all(window);
-	user_account(user);
 }
 
 static void delete_window(GtkWidget *widget, gpointer data)
@@ -84,7 +82,7 @@ static void delete_window(GtkWidget *widget, gpointer data)
 
 int main(int argc, char *argv[])
 {
-	GtkWidget *register_button, *login_button, *forgetpwd_button;
+	GtkWidget *register_button, *login_button, *enter_button,*dialog;
 	GtkWidget *account_box, *passwd_box, *button_box;
 	GtkWidget *account_label, *passwd_label;
 	GtkWidget *vbox;
@@ -158,7 +156,8 @@ int main(int argc, char *argv[])
 	gtk_box_pack_start(GTK_BOX(button_box), register_button, FALSE, FALSE, 5);
 	g_signal_connect(G_OBJECT(register_button), "clicked",
 					 G_CALLBACK(register_account), NULL);
-;
+	
+
 	/*Show*/
 	gtk_widget_show_all(window);
 	gtk_main();

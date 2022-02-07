@@ -66,6 +66,7 @@ static void verify(GtkWidget *widget,gpointer data)
 		gtk_widget_destroy(dialog);
 	}
 	gtk_widget_hide_all(window);
+
 }
 
 void register_account(GtkWidget *button, gpointer data)
