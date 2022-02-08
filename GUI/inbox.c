@@ -65,16 +65,6 @@ void show_recv_window(GtkWidget *widget, gpointer data)
 	gtk_clist_get_text(GTK_CLIST(p->outbox_clist),selected_row,0,&topic);
 	gtk_clist_get_text(GTK_CLIST(p->outbox_clist),selected_row,1,&from);
 
-//	c2s_t snd_msg;
-//	s2c_view_t rcv_msg;
-//	snd_msg.type = C2S_SHOWCONTENT;
-//	snd_msg.mailtype = C2S_RECV_MAIL;
-//	strcpy(snd_msg.info.account, recv_account);
-//	strcpy(snd_msg.mail.date, date);
-//	send(sfd, &snd_msg, sizeof(snd_msg), 0);
-//	recv(sfd, &rcv_msg, sizeof(rcv_msg), 0);
-//	content = rcv_msg.mail.content;
-
 	label1 = gtk_label_new(topic);
 	label2 = gtk_label_new(from);
 	label4 = gtk_label_new(content);

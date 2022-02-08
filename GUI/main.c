@@ -1,3 +1,5 @@
+//cc `pkg-config --cflags gtk+-2.0` main.c -o main `pkg-config --libs gtk+-2.0`
+
 #include <gtk/gtk.h>
 #include <stdlib.h>
 //#include "inbox.c"
