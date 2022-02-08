@@ -1,5 +1,6 @@
 #include <gtk/gtk.h>
 #include <stdlib.h>
+
 #define LABEL_NUM 8 
 #define REGISTER_LENGTH 400
 #define REGISTER_WIDTH 600
@@ -7,19 +8,26 @@
 
 static GtkWidget *window;
 
+User user_log = {.id = 3, .username="", .password=""};
 
-
-static void logout_user(GtkWidget *widget){
-	user.id=3;
-	send(server_out_user_socket, &user, sizeof(user), 0);
+static void logoutuser(){
+	user_log.id=3;
+	send(server_out_user_socket, &user_log, sizeof(user_log), 0);
 		gtk_widget_hide_all(window);
+			main();
+	
 }
 
-
+static void sendus(){
+	sendmail(user_log);
+	
+}
 
 
 void user_account(User user)
 {
+	strcpy(user_log.username,user.username);
+	strcpy(user_log.password, user.password);
 	int i;
 	GtkWidget *vbox;
 	GtkWidget *widget_label[LABEL_NUM];
@@ -33,7 +41,7 @@ void user_account(User user)
 	window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 	g_signal_connect(G_OBJECT(window), "delete_event",
 					 G_CALLBACK(gtk_main_quit), NULL);
-	gtk_window_set_title(GTK_WINDOW(window), user.username);
+	gtk_window_set_title(GTK_WINDOW(window), user_log.username);
 	gtk_window_set_default_size(GTK_WINDOW(window), 
 				REGISTER_LENGTH, REGISTER_WIDTH);
 	gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
@@ -60,10 +68,12 @@ void user_account(User user)
 	gtk_box_pack_start(GTK_BOX(hbox[0]), inbox_button, FALSE, FALSE, 5);
 	send_button = gtk_button_new_with_label("Send");
 	gtk_box_pack_start(GTK_BOX(hbox[1]), send_button, FALSE, FALSE, 5);
+	g_signal_connect(G_OBJECT(send_button), "clicked",
+							  G_CALLBACK(sendus), NULL);
 	logout_button = gtk_button_new_with_label("Logout");
 	gtk_box_pack_start(GTK_BOX(hbox[2]), logout_button, FALSE, FALSE, 5);
 	g_signal_connect(G_OBJECT(logout_button), "clicked",
-							  G_CALLBACK(logout_user), NULL);
+							  G_CALLBACK(logoutuser), NULL);
 
 							  
 	gtk_widget_show_all(window);

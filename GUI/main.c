@@ -1,7 +1,14 @@
 #include <gtk/gtk.h>
 #include <stdlib.h>
+//#include "inbox.c"
+#include "../server/config.h"
+#include "../server/mail.h"
+#include "../server/server_base.c"
+#include "../server/user.h"
 #include "reg.c"
 #include "table.c"
+#include "send.c"
+
 #define WINDOW_LENGTH 320
 #define WINDOW_WIDTH 300
 
@@ -70,6 +77,7 @@ static void login_verify(GtkWidget *widget, gpointer data)
 
 		gtk_widget_destroy(dialog);
 		z=1;
+			gtk_widget_hide_all(window);
 			user_account(user);
 		
 	}
