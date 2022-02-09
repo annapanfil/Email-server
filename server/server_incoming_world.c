@@ -30,6 +30,7 @@ Mailbox* find_mailbox(char* username, bool can_create){
 
 
 void send_all_messages(char*username, int client_socket){
+  printf("send_all_messages to %s\n", username);
   /*send all mails from mailbox to the user*/
   Mailbox* mailbox = find_mailbox(username, false);
 
@@ -49,7 +50,10 @@ void send_all_messages(char*username, int client_socket){
   if(send(client_socket, &stop, sizeof(stop), 0) < 0){
     printf("Sending stop mail failed\n");
   }
-  close(client_socket);
+  else
+    printf("Sent: STOP\n");
+
+  // close(client_socket);
 }
 
 
@@ -101,6 +105,7 @@ void* give_mails(void* arg){
     while (n>0){
       send_all_messages(username, client_socket);
       n = recv(client_socket, &username, sizeof(username), 0);
+      send(client_socket, &feedback, sizeof(feedback), 0);
     }
   }
   else{
