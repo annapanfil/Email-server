@@ -124,4 +124,5 @@ void sendmail(User user)
 							  G_CALLBACK(verify_mail), (gpointer)&swindow);
 	gtk_widget_show_all(window);
 	gtk_main();
+	return 0;
 }

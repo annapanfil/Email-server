@@ -7,13 +7,14 @@ int main();
 #include "../server/mail.h"
 #include "../server/server_base.c"
 #include "../server/user.h"
-#include "reg.c"
+//#include "reg.c"
 #include "table.c"
 // #include "send.c"
 
 #define WINDOW_LENGTH 320
 #define WINDOW_WIDTH 300
 
+extern int server_out_user_socket;
 
 typedef struct {
 	GtkWidget *account_edit, *passwd_edit;
@@ -27,6 +28,50 @@ Feedback feedback;
 
 #include "inbox.c"
 
+
+static void register_verify(GtkWidget *widget, gpointer data)
+{
+	login_window *lwindow = (login_window*)data;
+	const gchar *account, *passwd;
+	GtkWidget *dialog;
+	account = gtk_entry_get_text(GTK_ENTRY(lwindow->account_edit));
+	passwd = gtk_entry_get_text(GTK_ENTRY(lwindow->passwd_edit));
+	if (strlen(account) == 0 || strlen(passwd) == 0)
+	{
+		dialog = gtk_message_dialog_new(GTK_WINDOW(window),
+				GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_WARNING,
+				GTK_BUTTONS_CLOSE, "Account/passwd is not completed!");
+		gtk_dialog_run(GTK_DIALOG(dialog));
+		gtk_widget_destroy(dialog);
+		return;
+	}
+	user.id=1;
+	strcpy(user.username, account);
+	strcpy(user.password, passwd);
+	send(server_out_user_socket, &user, sizeof(user), 0);
+	bzero(&feedback, sizeof(feedback));
+	recv(server_out_user_socket, &feedback, sizeof(feedback), 0);
+	if (feedback.feedback == 1)
+	{
+		dialog = gtk_message_dialog_new(GTK_WINDOW(window),
+				GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_WARNING,
+				GTK_BUTTONS_CLOSE, "Registration is not possible");
+		gtk_dialog_run(GTK_DIALOG(dialog));
+		gtk_widget_destroy(dialog);
+		return;
+	}
+
+	if (feedback.feedback == 0)
+	{
+		dialog = gtk_message_dialog_new(GTK_WINDOW(window),
+				GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_WARNING,
+				GTK_BUTTONS_CLOSE, "Register success!");
+		gtk_dialog_run(GTK_DIALOG(dialog));
+
+		gtk_widget_destroy(dialog);
+
+	}
+	}
 
 static void login_verify(GtkWidget *widget, gpointer data)
 {
@@ -44,7 +89,7 @@ static void login_verify(GtkWidget *widget, gpointer data)
 		gtk_widget_destroy(dialog);
 		return;
 	}
-
+	user.id=2;
 	strcpy(user.username, account);
 	strcpy(user.password, passwd);
 	send(server_out_user_socket, &user, sizeof(user), 0);
@@ -163,7 +208,7 @@ int main(int argc, char *argv[])
 	register_button = gtk_button_new_with_label("Register");
 	gtk_box_pack_start(GTK_BOX(button_box), register_button, FALSE, FALSE, 5);
 	g_signal_connect(G_OBJECT(register_button), "clicked",
-					 G_CALLBACK(register_account), NULL);
+					 G_CALLBACK(register_verify), (gpointer)&lwindow);
 
 
 	/*Show*/

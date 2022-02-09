@@ -1,11 +1,13 @@
 #include <gtk/gtk.h>
 #include <stdlib.h>
 #include "send.c"
-
+extern int server_out_user_socket;
 #define LABEL_NUM 8
 #define REGISTER_LENGTH 400
 #define REGISTER_WIDTH 600
-
+typedef struct rWindow{
+	GtkWidget *account_edit, *passwd_edit;
+}rWindow;
 
 static GtkWidget *window;
 
@@ -14,13 +16,16 @@ User user_log = {.id = 3, .username="", .password=""};
 static void logoutuser(){
 	user_log.id=3;
 	send(server_out_user_socket, &user_log, sizeof(user_log), 0);
-		gtk_widget_hide_all(window);
-			main();
+	exit(0);
 
 }
 
 static void sendus(){
 	sendmail(user_log);
+
+}
+static void inboxus(){
+	recv_mail(user_log);
 
 }
 
@@ -67,6 +72,8 @@ void user_account(User user)
 
 	inbox_button = gtk_button_new_with_label("Inbox");
 	gtk_box_pack_start(GTK_BOX(hbox[0]), inbox_button, FALSE, FALSE, 5);
+	g_signal_connect(G_OBJECT(inbox_button), "clicked",
+							  G_CALLBACK(inboxus), NULL);
 	//TODO: signal connect
 
 	send_button = gtk_button_new_with_label("Send");
@@ -77,8 +84,10 @@ void user_account(User user)
 	gtk_box_pack_start(GTK_BOX(hbox[2]), logout_button, FALSE, FALSE, 5);
 	g_signal_connect(G_OBJECT(logout_button), "clicked",
 							  G_CALLBACK(logoutuser), NULL);
+	g_signal_connect(G_OBJECT(logout_button), "clicked",
+					 G_CALLBACK(gtk_main_quit), NULL);
 
 
 	gtk_widget_show_all(window);
-	gtk_main();
+	return 0;
 	}

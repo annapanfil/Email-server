@@ -8,14 +8,14 @@
 #define CONTENT_WIDTH  480
 
 static int selected_row = -1;
-static const gchar *recv_account;
 extern int sfd;
 extern int server_in_socket;
+
 
 typedef struct {
 	GtkWidget *outbox_window;
 	GtkWidget *outbox_show_button;
-	GtkWidget *outbox_hbox1,*outbox_hbox2,*outbox_hbox3,*outbox_vbox1,*outbox_vbox2,*outbox_vbox3,*outbox_hbox4, *outbox_trash_button;
+	GtkWidget *outbox_hbox1,*outbox_hbox2,*outbox_hbox3,*outbox_vbox1,*outbox_vbox2,*outbox_vbox3,*outbox_hbox4;
 	GtkWidget *outbox_clist,*outbox_user_label,*outbox_scrolled,*outbox_hbox5,*outbox_hbox6;
 }recvWindow;
 
@@ -35,73 +35,74 @@ void refresh_list(recvWindow *p, User user)
 			    strcpy(mail_rcv.to,user.username);
 	      printf("Reading mails...\n");
 
-				while(strcmp(mail_rcv.to, "STOP") != 0){
-					if (recv(server_in_socket, &mail_rcv, sizeof(mail_rcv), 0) > 0 && (strcmp(mail_rcv.to, "STOP") != 0)){
+			while(strcmp(mail_rcv.to, "STOP") != 0){
+				if (recv(server_in_socket, &mail_rcv, sizeof(mail_rcv), 0) > 0 && (strcmp(mail_rcv.to, "STOP") != 0)){
 						sprintf(infostr[0], "%s", mail_rcv.topic);
 						sprintf(infostr[1], "%s", mail_rcv.from);
+						sprintf(infostr[2], "%s", mail_rcv.text);
 						gtk_clist_append(GTK_CLIST(p->outbox_clist), infostr);
+										gtk_clist_freeze(GTK_CLIST(p->outbox_clist));
 	      	}
 				}
 				//QUESTION: czy to na pewno za pętlą?
-				//gtk_clist_freeze(GTK_CLIST(p->outbox_clist));
-				gtk_clist_unselect_all(GTK_CLIST(p->outbox_clist));
-				gtk_clist_clear(GTK_CLIST(p->outbox_clist));
+
+				//gtk_clist_unselect_all(GTK_CLIST(p->outbox_clist));
+				//gtk_clist_clear(GTK_CLIST(p->outbox_clist));
 	}
 }
 
-void show_recv_window(GtkWidget *widget, gpointer data)
-{
-	if (selected_row == -1 )
-		return;
-	gchar *topic,*from,*content;
-	GtkWidget *window,*label1,*vbox,*label2,*label4;
-	recvWindow *p = (recvWindow*)data;
-	window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-	g_signal_connect(G_OBJECT(window), "delete_event",
-					 G_CALLBACK(gtk_main_quit), NULL);
-	gtk_window_set_title(GTK_WINDOW (window),"Mail content");
-	gtk_window_set_default_size(GTK_WINDOW(window), CONTENT_LENGTH, CONTENT_WIDTH);
-	gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
-	gtk_window_set_modal(GTK_WINDOW(window), TRUE);
-	gtk_widget_show(window);
+//void show_recv_window(GtkWidget *widget, gpointer data)
+//{
+//	if (selected_row == -1 )
+//		return;
+//	gchar *topic,*from,*content;
+//	GtkWidget *window,*label1,*vbox,*label2,*label4;
+//	recvWindow *p = (recvWindow*)data;
+//	window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+//	g_signal_connect(G_OBJECT(window), "delete_event",
+//					 G_CALLBACK(gtk_main_quit), NULL);
+//	gtk_window_set_title(GTK_WINDOW (window),"Mail content");
+//	gtk_window_set_default_size(GTK_WINDOW(window), CONTENT_LENGTH, CONTENT_WIDTH);
+//	gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
+//	gtk_window_set_modal(GTK_WINDOW(window), TRUE);
+//	gtk_widget_show(window);
+//
+//	gtk_clist_get_text(GTK_CLIST(p->outbox_clist),selected_row,0,&topic);
+//	gtk_clist_get_text(GTK_CLIST(p->outbox_clist),selected_row,1,&from);
+//
+//	label1 = gtk_label_new(topic);
+//	label2 = gtk_label_new(from);
+//	label4 = gtk_label_new(content);
 
-	gtk_clist_get_text(GTK_CLIST(p->outbox_clist),selected_row,0,&topic);
-	gtk_clist_get_text(GTK_CLIST(p->outbox_clist),selected_row,1,&from);
-
-	label1 = gtk_label_new(topic);
-	label2 = gtk_label_new(from);
-	label4 = gtk_label_new(content);
-
-	vbox = gtk_vbox_new(FALSE,20);
-	gtk_box_pack_start(GTK_BOX(vbox), label1, FALSE, FALSE, 0);
-	gtk_box_pack_start(GTK_BOX(vbox), label2, FALSE, FALSE, 0);
-	gtk_box_pack_start(GTK_BOX(vbox), label4, FALSE, FALSE, 0);
-	gtk_container_add(GTK_CONTAINER(window), GTK_WIDGET(vbox));
-	gtk_widget_show_all(window);
-	gtk_main();
-}
+//	vbox = gtk_vbox_new(FALSE,20);
+//	gtk_box_pack_start(GTK_BOX(vbox), label1, FALSE, FALSE, 0);
+//	gtk_box_pack_start(GTK_BOX(vbox), label2, FALSE, FALSE, 0);
+//	gtk_box_pack_start(GTK_BOX(vbox), label4, FALSE, FALSE, 0);
+///	gtk_container_add(GTK_CONTAINER(window), GTK_WIDGET(vbox));
+//	gtk_widget_show_all(window);
+//	gtk_main();
+//}
 
 
-void unget_recv_row(GtkCList *clist,gint row,gint column,GdkEventButton *event,gpointer user_data)
-{
-	selected_row = -1;
-}
+//void unget_recv_row(GtkCList *clist,gint row,gint column,GdkEventButton *event,gpointer user_data)
+//{
+//	selected_row = -1;
+//}
 
-void get_recv_row(GtkCList *clist,gint row,gint column,GdkEventButton *event,gpointer user_data){
-	selected_row = row;
-}
+//void get_recv_row(GtkCList *clist,gint row,gint column,GdkEventButton *event,gpointer user_data){
+//	selected_row = row;
+//}
 
-void quit_recvwindow(GtkWidget *widget, gpointer data)
-{
+//void quit_recvwindow(GtkWidget *widget, gpointer data)
+//{
 
-	gtk_widget_hide_all(((recvWindow*)data)->outbox_window);
-}
+//	gtk_widget_hide_all(((recvWindow*)data)->outbox_window);
+//}
 
-void recv_mail(const gchar *account, User user)
+void recv_mail(User user)
 {
 	recvWindow rwindow;
-	gchar *title[] = {"Title","Sender","Date"};
-	recv_account = account;
+	gchar *title[] = {"Title","Sender","Text"};
 
 	rwindow.outbox_window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 	gtk_window_set_title(GTK_WINDOW (rwindow.outbox_window),"Inbox");
@@ -112,14 +113,13 @@ void recv_mail(const gchar *account, User user)
 					 G_CALLBACK(gtk_main_quit), (gpointer)&rwindow);
 
 	gchar welcome[60];
-	sprintf(welcome, "Hello, %s", account);
+	sprintf(welcome, "Hello, %s", user.username);
 	rwindow.outbox_user_label = gtk_accel_label_new (welcome);
-	rwindow.outbox_show_button = gtk_button_new_with_label("Show");
 	rwindow.outbox_scrolled = gtk_scrolled_window_new(NULL,NULL);
 	rwindow.outbox_hbox1 = gtk_hbox_new(TRUE,0);
-
+	rwindow.outbox_hbox2 = gtk_hbox_new(TRUE,0);
 	rwindow.outbox_hbox3 = gtk_hbox_new(TRUE,20);
-	gtk_box_pack_start(GTK_BOX(rwindow.outbox_hbox3), rwindow.outbox_show_button, FALSE, FALSE, 0);
+
 
 	rwindow.outbox_hbox5 = gtk_hbox_new(TRUE,0);
 	gtk_container_set_border_width(GTK_CONTAINER(rwindow.outbox_hbox5), 20);
@@ -149,9 +149,9 @@ void recv_mail(const gchar *account, User user)
 	gtk_box_pack_start(GTK_BOX(rwindow.outbox_vbox3),rwindow.outbox_vbox2,TRUE,TRUE,0);
 	gtk_container_add(GTK_CONTAINER(rwindow.outbox_window), GTK_WIDGET(rwindow.outbox_vbox3));
 
-	g_signal_connect(G_OBJECT(rwindow.outbox_show_button),"clicked",G_CALLBACK(show_recv_window), (gpointer)&rwindow);
-	g_signal_connect(G_OBJECT(rwindow.outbox_clist),"select_row",G_CALLBACK(get_recv_row), NULL);
-	g_signal_connect(G_OBJECT(rwindow.outbox_clist), "unselect_row", G_CALLBACK(unget_recv_row), NULL);
+//	g_signal_connect(G_OBJECT(rwindow.outbox_show_button),"clicked",G_CALLBACK(show_recv_window), (gpointer)&rwindow);
+//	g_signal_connect(G_OBJECT(rwindow.outbox_clist),"select_row",G_CALLBACK(get_recv_row), NULL);
+//	g_signal_connect(G_OBJECT(rwindow.outbox_clist), "unselect_row", G_CALLBACK(unget_recv_row), NULL);
 	refresh_list(&rwindow, user);
 
 	gtk_widget_show_all(rwindow.outbox_window);
