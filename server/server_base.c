@@ -1,3 +1,5 @@
+#ifndef SEVER_BASE_C
+#define SEVER_BASE_C
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/socket.h>
@@ -71,3 +73,4 @@ int server_listen(int server_socket, void* (*client_f)(void*)){
   }
   return 0;
 }
+#endif //SERVER_BASE_C

@@ -30,11 +30,12 @@ void create_user(int sockfd)
         printf("Enter the password : ");
         fgets(buff_password, MAX, stdin);
         buff_password[strcspn(buff_password,"\n")] ='\0';
-        strcpy(user.password, buff_password);  
+        strcpy(user.password, buff_password);
         send(sockfd, &user, sizeof(user), 0);
           recv(sockfd, &feedback, sizeof(feedback), 0);
           printf("Feedback: %d %s\n", feedback.feedback, feedback.message);
 }
+
 void send_message_user(int sockfd,User user)
 {
 
@@ -61,11 +62,11 @@ void send_message_user(int sockfd,User user)
         printf("Enter the text : ");
         fgets(buff_text, MAX, stdin);
         buff_text[strcspn(buff_text,"\n")] ='\0';
-        strcpy(mail.text, buff_text);    
+        strcpy(mail.text, buff_text);
         send(sockfd, &mail, sizeof(mail), 0);
         recv(sockfd, &feedback, sizeof(feedback), 0);
         printf("Feedback: %d %s\n", feedback.feedback, feedback.message);
-        
+
 }
 
 void get_message_user(int sockfd,User user)
@@ -93,7 +94,7 @@ void get_message_user(int sockfd,User user)
     else{
             printf("Nothing\n");
     }
-        
+
 }
 
 
@@ -124,7 +125,7 @@ void login_for_user(int sockfd, int sckfd,int scfd)
         printf("Enter the password : ");
         fgets(buff_password, MAX, stdin);
         buff_password[strcspn(buff_password,"\n")] ='\0';
-        strcpy(user.password, buff_password);  
+        strcpy(user.password, buff_password);
         send(sockfd, &user, sizeof(user), 0);
           recv(sockfd, &feedback, sizeof(feedback), 0);
           printf("Feedback: %d %s\n", feedback.feedback, feedback.message);
@@ -147,15 +148,10 @@ void login_for_user(int sockfd, int sckfd,int scfd)
             logout_for_user(sockfd,user);
             break;
         }
-          
+
           }
           }
           else{
           printf("Try again or choose another option");
           }
           }
-
-
-
-
-

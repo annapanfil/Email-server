@@ -1,20 +1,18 @@
 //cc `pkg-config --cflags gtk+-2.0` main.c -o main `pkg-config --libs gtk+-2.0`
+int main();
 
 #include <gtk/gtk.h>
 #include <stdlib.h>
-//#include "inbox.c"
 #include "../server/config.h"
 #include "../server/mail.h"
 #include "../server/server_base.c"
 #include "../server/user.h"
 #include "reg.c"
 #include "table.c"
-#include "send.c"
+// #include "send.c"
 
 #define WINDOW_LENGTH 320
 #define WINDOW_WIDTH 300
-
-
 
 
 typedef struct {
@@ -27,7 +25,7 @@ int z=0;
 User user = {.id = 2, .username="", .password=""};
 Feedback feedback;
 
-
+#include "inbox.c"
 
 
 static void login_verify(GtkWidget *widget, gpointer data)
@@ -39,7 +37,7 @@ static void login_verify(GtkWidget *widget, gpointer data)
 	passwd = gtk_entry_get_text(GTK_ENTRY(lwindow->passwd_edit));
 	if (strlen(account) == 0 || strlen(passwd) == 0)
 	{
-		dialog = gtk_message_dialog_new(GTK_WINDOW(window), 
+		dialog = gtk_message_dialog_new(GTK_WINDOW(window),
 				GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_WARNING,
 				GTK_BUTTONS_CLOSE, "Account/passwd is not completed!");
 		gtk_dialog_run(GTK_DIALOG(dialog));
@@ -54,7 +52,7 @@ static void login_verify(GtkWidget *widget, gpointer data)
 	recv(server_out_user_socket, &feedback, sizeof(feedback), 0);
 	if (feedback.feedback == 1)
 	{
-		dialog = gtk_message_dialog_new(GTK_WINDOW(window), 
+		dialog = gtk_message_dialog_new(GTK_WINDOW(window),
 				GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_WARNING,
 				GTK_BUTTONS_CLOSE, "Login is incorrect!");
 		gtk_dialog_run(GTK_DIALOG(dialog));
@@ -63,7 +61,7 @@ static void login_verify(GtkWidget *widget, gpointer data)
 	}
 	if (feedback.feedback == 2)
 	{
-		dialog = gtk_message_dialog_new(GTK_WINDOW(window), 
+		dialog = gtk_message_dialog_new(GTK_WINDOW(window),
 				GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_WARNING,
 				GTK_BUTTONS_CLOSE, "Password is incorrect!");
 		gtk_dialog_run(GTK_DIALOG(dialog));
@@ -72,7 +70,7 @@ static void login_verify(GtkWidget *widget, gpointer data)
 	}
 	if (feedback.feedback == 0)
 	{
-		dialog = gtk_message_dialog_new(GTK_WINDOW(window), 
+		dialog = gtk_message_dialog_new(GTK_WINDOW(window),
 				GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_WARNING,
 				GTK_BUTTONS_CLOSE, "Login success!");
 		gtk_dialog_run(GTK_DIALOG(dialog));
@@ -81,7 +79,7 @@ static void login_verify(GtkWidget *widget, gpointer data)
 		z=1;
 			gtk_widget_hide_all(window);
 			user_account(user);
-		
+
 	}
 }
 
@@ -100,7 +98,7 @@ int main(int argc, char *argv[])
 
 	//Create window
 	gtk_init(&argc, &argv);
-	
+
 
   	create_socket(SERVER_OUT_ADDR, SERVER_OUT_PORT_MAIL, &server_addr, &server_out_mail_socket);
 
@@ -122,7 +120,7 @@ int main(int argc, char *argv[])
 	gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
 	gtk_container_set_border_width(GTK_CONTAINER(window), 20);
 	gtk_window_set_resizable(GTK_WINDOW(window), FALSE);
-	gtk_window_set_default_size(GTK_WINDOW(window), 
+	gtk_window_set_default_size(GTK_WINDOW(window),
 								WINDOW_LENGTH, WINDOW_WIDTH);
 
 	/*First-floor box*/
@@ -166,7 +164,7 @@ int main(int argc, char *argv[])
 	gtk_box_pack_start(GTK_BOX(button_box), register_button, FALSE, FALSE, 5);
 	g_signal_connect(G_OBJECT(register_button), "clicked",
 					 G_CALLBACK(register_account), NULL);
-	
+
 
 	/*Show*/
 	gtk_widget_show_all(window);
@@ -175,7 +173,6 @@ int main(int argc, char *argv[])
 	close(server_out_mail_socket);
   	close(server_out_user_socket);
   	close(server_in_socket);
-			  
+
 	return 0;
 }
-
